@@ -9,7 +9,7 @@ const sidebarCollapsed = ref(true)
 <template>
   <div class="min-h-screen bg-slate-50">
     <!-- Demo banner -->
-    <div class="bg-violet-600 text-white text-center py-2 text-sm">
+    <div class="bg-[#088BB2] text-white text-center py-2 text-sm">
       &#x1F50D; Est&aacute;s viendo una demo interactiva &mdash;
       <router-link to="/" class="underline font-medium hover:text-violet-100">
         Ver precios

@@ -49,13 +49,13 @@ const mobileOpen = computed({
 <template>
   <!-- Mobile sidebar via Sheet -->
   <Sheet v-model:open="mobileOpen">
-    <SheetContent side="left" class="w-60 bg-slate-800 text-white p-0 border-none md:hidden">
+    <SheetContent side="left" class="w-60 bg-white text-[#0A3040] p-0 border-none md:hidden">
       <SheetTitle class="sr-only">Menu de navegaci&oacute;n</SheetTitle>
       <div class="flex items-center px-4 h-14">
-        <span class="font-semibold text-sm tracking-wide">MediAgenda MX</span>
+        <span class="font-semibold text-sm tracking-wide text-[#0A3040]">MediAgenda MX</span>
       </div>
 
-      <Separator class="bg-slate-700" />
+      <Separator class="bg-[#e2e8f0]" />
 
       <nav class="flex-1 py-4 space-y-1 overflow-y-auto">
         <router-link
@@ -69,15 +69,15 @@ const mobileOpen = computed({
             :class="[
               'w-full justify-start gap-3 mx-2 rounded-lg text-sm',
               isActive(item)
-                ? 'bg-cyan-600 text-white hover:bg-cyan-600 hover:text-white'
-                : 'text-slate-300 hover:bg-slate-700 hover:text-white',
+                ? 'bg-[#EAFBFE] text-[#088BB2] hover:bg-[#EAFBFE] hover:text-[#088BB2]'
+                : 'text-[#64748b] hover:bg-[#F8FAFB] hover:text-[#0A3040]',
             ]"
           >
             <span class="text-lg flex-shrink-0">{{ item.icon }}</span>
             <span class="whitespace-nowrap">{{ item.label }}</span>
             <Badge
               v-if="item.badge"
-              class="ml-auto bg-violet-600 text-white border-none text-[10px] px-1.5 py-0.5"
+              class="ml-auto bg-violet-50 text-violet-600 border-none text-[10px] px-1.5 py-0.5"
             >
               {{ item.badge }}
             </Badge>
@@ -85,10 +85,10 @@ const mobileOpen = computed({
         </router-link>
       </nav>
 
-      <Separator class="bg-slate-700" />
+      <Separator class="bg-[#e2e8f0]" />
 
       <div class="px-4 py-3">
-        <p class="text-[11px] text-slate-500">Demo v1.0</p>
+        <p class="text-[11px] text-[#94a3b8]">Demo v1.0</p>
       </div>
     </SheetContent>
   </Sheet>
@@ -96,12 +96,12 @@ const mobileOpen = computed({
   <!-- Desktop sidebar -->
   <aside
     :class="[
-      'hidden md:flex sticky top-0 left-0 z-50 h-screen bg-slate-800 text-white flex-col transition-all duration-300 ease-in-out',
+      'hidden md:flex sticky top-0 left-0 z-50 h-screen bg-white border-r border-[#e2e8f0] text-[#0A3040] flex-col transition-all duration-300 ease-in-out',
       collapsed ? 'w-16' : 'w-60',
     ]"
   >
     <!-- Desktop brand area -->
-    <div class="flex items-center h-14 px-4 border-b border-slate-700">
+    <div class="flex items-center h-14 px-4 border-b border-[#e2e8f0]">
       <span
         :class="[
           'font-semibold tracking-wide transition-opacity duration-200',
@@ -125,8 +125,8 @@ const mobileOpen = computed({
           :class="[
             'w-full justify-start gap-3 mx-2 rounded-lg text-sm',
             isActive(item)
-              ? 'bg-cyan-600 text-white hover:bg-cyan-600 hover:text-white'
-              : 'text-slate-300 hover:bg-slate-700 hover:text-white',
+              ? 'bg-[#EAFBFE] text-[#088BB2] hover:bg-[#EAFBFE] hover:text-[#088BB2]'
+              : 'text-[#64748b] hover:bg-[#F8FAFB] hover:text-[#0A3040]',
             collapsed ? 'justify-center px-0' : '',
           ]"
         >
@@ -142,7 +142,7 @@ const mobileOpen = computed({
           <Badge
             v-if="item.badge"
             :class="[
-              'ml-auto bg-violet-600 text-white border-none text-[10px] px-1.5 py-0.5',
+              'ml-auto bg-violet-50 text-violet-600 border-none text-[10px] px-1.5 py-0.5',
               collapsed ? 'hidden' : '',
             ]"
           >
@@ -153,11 +153,11 @@ const mobileOpen = computed({
     </nav>
 
     <!-- Footer -->
-    <Separator class="bg-slate-700" />
+    <Separator class="bg-[#e2e8f0]" />
     <div class="px-4 py-3">
       <p
         :class="[
-          'text-[11px] text-slate-500 transition-opacity duration-200',
+          'text-[11px] text-[#94a3b8] transition-opacity duration-200',
           collapsed ? 'opacity-0' : '',
         ]"
       >

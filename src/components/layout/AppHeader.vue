@@ -36,8 +36,8 @@ function handleLogout() {
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </Button>
-        <span class="text-lg font-bold text-slate-800 tracking-tight">
-          Medi<span class="text-cyan-600">Agenda</span> MX
+        <span class="text-lg font-bold tracking-tight">
+          <span class="text-[#088BB2]">Medi</span><span class="text-[#0A3040]">Agenda</span> <span class="text-[#0A3040]">MX</span>
         </span>
       </div>
 
@@ -53,7 +53,7 @@ function handleLogout() {
           to="/demo/dr/carlos-mendoza"
           class="hidden sm:inline"
         >
-          <Button variant="link" class="text-cyan-600 hover:text-cyan-700 px-0">
+          <Button variant="link" class="text-[#088BB2] hover:text-[#076F90] px-0">
             Ver p&aacute;gina p&uacute;blica
           </Button>
         </router-link>
