@@ -1,9 +1,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import HeroSection from '@/components/landing/HeroSection.vue'
-import ProblemSection from '@/components/landing/ProblemSection.vue'
+import DemoCategoriesSection from '@/components/landing/DemoCategoriesSection.vue'
 import FeaturesSection from '@/components/landing/FeaturesSection.vue'
-import ScreenshotsSection from '@/components/landing/ScreenshotsSection.vue'
 import HowItWorksSection from '@/components/landing/HowItWorksSection.vue'
 import PricingSection from '@/components/landing/PricingSection.vue'
 import FAQSection from '@/components/landing/FAQSection.vue'
@@ -12,6 +11,7 @@ import FooterSection from '@/components/landing/FooterSection.vue'
 
 const waLink = 'https://wa.me/5214421234567?text=Hola%2C%20me%20interesa%20MediAgenda%20MX'
 const scrolled = ref(false)
+const mobileMenuOpen = ref(false)
 
 function handleScroll() {
   scrolled.value = window.scrollY > 20
@@ -27,47 +27,71 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="relative min-h-screen bg-[#09090b]" style="scroll-behavior: smooth;">
-    <!-- Subtle grid background -->
-    <div class="pointer-events-none fixed inset-0 z-0" style="background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 64px 64px;"></div>
-
+  <div class="relative min-h-screen bg-[#F8FAFB]">
     <!-- Sticky Header -->
     <header
-      class="fixed inset-x-0 top-0 z-50 transition-all duration-500"
+      class="fixed inset-x-0 top-0 z-50 transition-all duration-300"
       :class="[
         scrolled
-          ? 'border-b border-[#1a1a2e] bg-[#09090b]/80 backdrop-blur-xl'
-          : 'bg-transparent'
+          ? 'border-b border-[#e2e8f0] bg-white/80 backdrop-blur-xl shadow-sm'
+          : 'bg-white/60 backdrop-blur-sm'
       ]"
     >
-      <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <div class="flex items-center gap-1.5">
-          <span class="text-lg font-bold text-zinc-100">MediAgenda</span>
-          <span class="text-lg font-bold text-cyan-400">MX</span>
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-1">
+          <span class="text-lg font-extrabold text-[#088BB2]">Medi</span>
+          <span class="text-lg font-extrabold text-[#0A3040]">Agenda</span>
         </div>
-        <div class="flex items-center gap-4">
+
+        <nav class="hidden items-center gap-6 md:flex">
+          <a href="#demo-sections" class="text-sm font-medium text-[#475569] transition-colors hover:text-[#088BB2]">Demo</a>
+          <a href="#funciones" class="text-sm font-medium text-[#475569] transition-colors hover:text-[#088BB2]">Funciones</a>
+          <a href="#precios" class="text-sm font-medium text-[#475569] transition-colors hover:text-[#088BB2]">Precios</a>
+          <a href="#faq" class="text-sm font-medium text-[#475569] transition-colors hover:text-[#088BB2]">FAQ</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
           <a
-            href="#precios"
-            class="hidden text-sm font-medium text-zinc-400 transition-colors duration-200 hover:text-white sm:inline-flex"
+            :href="waLink"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hidden rounded-lg border border-[#9AEBFB] bg-[#EAFBFE] px-4 py-2 text-sm font-medium text-[#088BB2] transition-colors hover:bg-[#CAF4FD] sm:inline-flex"
           >
-            Precios
+            Contactar
           </a>
           <a
             href="/demo"
-            class="rounded-full bg-white px-5 py-2 text-sm font-medium text-black transition-all duration-200 hover:bg-zinc-100"
+            class="rounded-lg bg-[#088BB2] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#076F90]"
           >
-            Ver demo &rarr;
+            Ver demo
           </a>
+          <button
+            class="ml-1 inline-flex items-center justify-center rounded-lg p-2 text-[#475569] hover:bg-[#EAFBFE] md:hidden"
+            @click="mobileMenuOpen = !mobileMenuOpen"
+          >
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path v-if="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              <path v-else stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
+      </div>
+
+      <div v-if="mobileMenuOpen" class="border-t border-[#e2e8f0] bg-white px-4 py-4 md:hidden">
+        <nav class="flex flex-col gap-3">
+          <a href="#demo-sections" class="text-sm font-medium text-[#475569]" @click="mobileMenuOpen = false">Demo</a>
+          <a href="#funciones" class="text-sm font-medium text-[#475569]" @click="mobileMenuOpen = false">Funciones</a>
+          <a href="#precios" class="text-sm font-medium text-[#475569]" @click="mobileMenuOpen = false">Precios</a>
+          <a href="#faq" class="text-sm font-medium text-[#475569]" @click="mobileMenuOpen = false">FAQ</a>
+          <a :href="waLink" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-[#088BB2]">Contactar</a>
+        </nav>
       </div>
     </header>
 
-    <!-- Sections -->
-    <main class="relative z-10">
+    <main>
       <HeroSection />
-      <ProblemSection />
+      <DemoCategoriesSection />
       <FeaturesSection />
-      <ScreenshotsSection />
       <HowItWorksSection />
       <PricingSection />
       <FAQSection />
@@ -76,7 +100,6 @@ onUnmounted(() => {
 
     <FooterSection />
 
-    <!-- Floating WhatsApp Button -->
     <a
       :href="waLink"
       target="_blank"
