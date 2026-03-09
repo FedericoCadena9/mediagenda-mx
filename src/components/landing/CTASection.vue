@@ -3,33 +3,36 @@ const waLink = 'https://wa.me/5214421234567?text=Hola%2C%20me%20interesa%20MediA
 </script>
 
 <template>
-  <section class="relative overflow-hidden bg-gradient-to-b from-[#0a0a0f] via-[#0f0f14] to-[#09090b] py-20 md:py-28">
-    <!-- Violet orb -->
-    <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[400px] rounded-full bg-violet-500/15 blur-[100px]"></div>
+  <section class="bg-[#F8FAFB] py-20 md:py-28">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div class="relative overflow-hidden rounded-2xl bg-[#088BB2] px-8 py-16 text-center shadow-xl shadow-[#088BB2]/20 sm:px-16">
+        <div class="pointer-events-none absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 50%, #5EDCF6 0%, transparent 50%), radial-gradient(circle at 80% 50%, #076F90 0%, transparent 50%);"></div>
 
-    <div class="relative mx-auto max-w-6xl px-4 text-center sm:px-6 lg:px-8">
-      <h2 class="text-3xl font-bold text-zinc-50 sm:text-4xl">
-        ¿Listo para dejar de agendar por WhatsApp?
-      </h2>
-      <p class="mx-auto mt-4 max-w-2xl text-lg text-zinc-400">
-        Únete a los médicos que ya automatizaron su consultorio
-      </p>
+        <div class="relative">
+          <h2 class="text-3xl font-bold text-white sm:text-4xl">
+            Listo para dejar de agendar por WhatsApp?
+          </h2>
+          <p class="mx-auto mt-4 max-w-2xl text-lg text-[#CAF4FD]">
+            Unete a los medicos que ya automatizaron su consultorio
+          </p>
 
-      <div class="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-        <a
-          href="/demo"
-          class="inline-flex items-center rounded-full bg-white px-8 py-3.5 text-sm font-semibold text-zinc-900 transition-colors hover:bg-zinc-100"
-        >
-          Ver demo en vivo &rarr;
-        </a>
-        <a
-          :href="waLink"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center rounded-full border border-zinc-700 px-8 py-3.5 text-sm text-zinc-300 transition-colors hover:bg-zinc-800"
-        >
-          Contactar por WhatsApp &rarr;
-        </a>
+          <div class="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+            <a
+              href="/demo"
+              class="inline-flex items-center rounded-lg bg-white px-8 py-3.5 text-sm font-semibold text-[#088BB2] transition-colors hover:bg-[#EAFBFE]"
+            >
+              Ver demo en vivo
+            </a>
+            <a
+              :href="waLink"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center rounded-lg border border-white/30 px-8 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
+            >
+              Contactar por WhatsApp
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </section>

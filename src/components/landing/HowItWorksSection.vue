@@ -1,45 +1,46 @@
 <script setup>
+import { MessageCircle, Settings, Rocket } from 'lucide-vue-next'
+
 const steps = [
   {
     number: '01',
-    emoji: '💬',
-    color: 'bg-cyan-950/60',
+    icon: MessageCircle,
+    color: 'bg-[#EAFBFE] text-[#088BB2]',
     title: 'Nos contactas por WhatsApp',
-    description: 'Cuéntanos sobre tu consultorio: nombre, servicios, horarios y cómo quieres tu página.',
+    description: 'Cuentanos sobre tu consultorio: nombre, servicios, horarios y como quieres tu pagina.',
   },
   {
     number: '02',
-    emoji: '⚙️',
-    color: 'bg-violet-950/60',
-    title: 'Configuramos tu página con tus datos',
-    description: 'Nosotros nos encargamos de todo. En 48–72 horas tienes tu plataforma lista.',
+    icon: Settings,
+    color: 'bg-violet-50 text-violet-600',
+    title: 'Configuramos tu pagina con tus datos',
+    description: 'Nosotros nos encargamos de todo. En 48-72 horas tienes tu plataforma lista.',
   },
   {
     number: '03',
-    emoji: '🚀',
-    color: 'bg-emerald-950/60',
+    icon: Rocket,
+    color: 'bg-emerald-50 text-emerald-600',
     title: 'Compartes tu link y tus pacientes agendan solos',
-    description: 'Envías tu link por WhatsApp, redes o donde quieras. Tus pacientes agendan 24/7.',
+    description: 'Envias tu link por WhatsApp, redes o donde quieras. Tus pacientes agendan 24/7.',
   },
 ]
 </script>
 
 <template>
-  <section class="bg-[#0a0a0f] py-20 md:py-28">
+  <section class="bg-[#F8FAFB] py-20 md:py-28">
     <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
       <div class="text-center">
-        <p class="mb-4 text-xs tracking-[0.2em] uppercase text-zinc-500">
-          Cómo funciona
+        <p class="mb-3 text-xs font-semibold tracking-[0.2em] uppercase text-[#088BB2]">
+          Como funciona
         </p>
-        <h2 class="text-3xl font-bold text-zinc-50 sm:text-4xl">
-          En 3 pasos estás en línea
+        <h2 class="text-3xl font-bold text-[#0A3040] sm:text-4xl">
+          En 3 pasos estas en linea
         </h2>
       </div>
 
       <div class="relative mt-14 grid gap-8 sm:grid-cols-3">
-        <!-- Dashed connector line (desktop only) -->
         <div
-          class="pointer-events-none absolute left-[calc(16.66%+1rem)] right-[calc(16.66%+1rem)] top-10 hidden border-t border-dashed border-zinc-800 sm:block"
+          class="pointer-events-none absolute left-[calc(16.66%+1rem)] right-[calc(16.66%+1rem)] top-10 hidden border-t border-dashed border-[#9AEBFB] sm:block"
         ></div>
 
         <div
@@ -47,26 +48,23 @@ const steps = [
           :key="i"
           class="relative text-center"
         >
-          <!-- Step number -->
-          <p class="text-5xl font-bold text-zinc-800">{{ step.number }}</p>
+          <p class="text-5xl font-bold text-[#EAFBFE]">{{ step.number }}</p>
 
-          <!-- Icon circle -->
           <div
             :class="step.color"
-            class="mx-auto mt-4 flex h-12 w-12 items-center justify-center rounded-full text-xl"
+            class="mx-auto mt-4 flex h-12 w-12 items-center justify-center rounded-full"
           >
-            {{ step.emoji }}
+            <component :is="step.icon" class="h-5 w-5" />
           </div>
 
-          <h3 class="mt-5 font-semibold text-zinc-100">{{ step.title }}</h3>
-          <p class="mt-2 text-sm text-zinc-500">{{ step.description }}</p>
+          <h3 class="mt-5 font-semibold text-[#0A3040]">{{ step.title }}</h3>
+          <p class="mt-2 text-sm text-[#64748b]">{{ step.description }}</p>
         </div>
       </div>
 
-      <!-- Callout card -->
-      <div class="mt-14 rounded-2xl border border-[#1a1a2e] bg-[#0f0f14] p-6 text-center">
-        <p class="text-zinc-300">
-          Tú no tocas código. Nosotros lo hacemos todo.
+      <div class="mt-14 rounded-xl border border-[#e2e8f0] bg-white p-6 text-center">
+        <p class="text-[#475569] font-medium">
+          Tu no tocas codigo. Nosotros lo hacemos todo.
         </p>
       </div>
     </div>

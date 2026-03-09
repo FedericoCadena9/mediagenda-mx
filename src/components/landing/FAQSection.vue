@@ -3,55 +3,53 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/
 
 const faqs = [
   {
-    question: '¿Necesito saber de tecnología?',
-    answer: 'No. Nosotros configuramos todo. Tú solo compartes tu link con tus pacientes.',
+    question: 'Necesito saber de tecnologia?',
+    answer: 'No. Nosotros configuramos todo. Tu solo compartes tu link con tus pacientes.',
   },
   {
-    question: '¿Cuánto tardan en tener mi página lista?',
-    answer: '48–72 horas después de recibir tu información.',
+    question: 'Cuanto tardan en tener mi pagina lista?',
+    answer: '48-72 horas despues de recibir tu informacion.',
   },
   {
-    question: '¿Mis pacientes necesitan descargar una app?',
+    question: 'Mis pacientes necesitan descargar una app?',
     answer: 'No. Agendan desde el navegador de su celular, sin instalar nada.',
   },
   {
-    question: '¿Puedo personalizar los colores y mi información?',
-    answer: 'Sí, todo se adapta a tu consultorio: nombre, servicios, horarios y colores.',
+    question: 'Puedo personalizar los colores y mi informacion?',
+    answer: 'Si, todo se adapta a tu consultorio: nombre, servicios, horarios y colores.',
   },
   {
-    question: '¿Qué pasa si necesito ayuda después?',
+    question: 'Que pasa si necesito ayuda despues?',
     answer: 'Con el plan de mantenimiento mensual tienes soporte por WhatsApp y actualizaciones.',
   },
   {
-    question: '¿Funciona en celular?',
-    answer: 'Sí, todo es 100% responsive. Funciona perfecto en cualquier celular.',
+    question: 'Funciona en celular?',
+    answer: 'Si, todo es 100% responsive. Funciona perfecto en cualquier celular.',
   },
 ]
 </script>
 
 <template>
-  <section class="bg-[#09090b] py-20 md:py-28">
+  <section id="faq" class="bg-white py-20 md:py-28">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <!-- Header -->
       <div class="text-center">
-        <span class="text-xs tracking-[0.2em] uppercase text-zinc-500">FAQ</span>
-        <h2 class="mt-4 text-3xl font-bold text-zinc-50 sm:text-4xl">
+        <span class="text-xs font-semibold tracking-[0.2em] uppercase text-[#088BB2]">FAQ</span>
+        <h2 class="mt-4 text-3xl font-bold text-[#0A3040] sm:text-4xl">
           Preguntas frecuentes
         </h2>
       </div>
 
-      <!-- Accordion -->
       <Accordion type="single" collapsible class="mt-14 space-y-3">
         <AccordionItem
           v-for="(faq, i) in faqs"
           :key="i"
           :value="`faq-${i}`"
-          class="overflow-hidden rounded-xl border border-[#1a1a2e] bg-[#0f0f14] mb-3"
+          class="overflow-hidden rounded-xl border border-[#e2e8f0] bg-[#F8FAFB] mb-3"
         >
-          <AccordionTrigger class="px-6 py-5 text-base font-medium text-zinc-200 hover:text-white hover:no-underline">
+          <AccordionTrigger class="px-6 py-5 text-base font-medium text-[#0A3040] hover:text-[#088BB2] hover:no-underline">
             {{ faq.question }}
           </AccordionTrigger>
-          <AccordionContent class="px-6 pb-5 text-sm text-zinc-500">
+          <AccordionContent class="px-6 pb-5 text-sm text-[#64748b]">
             {{ faq.answer }}
           </AccordionContent>
         </AccordionItem>
