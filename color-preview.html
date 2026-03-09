@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediAgenda — Color Scale Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #F8FAFB;
+      color: #1a1a2e;
+      padding: 40px;
+    }
+    h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+    .subtitle { color: #64748b; margin-bottom: 40px; font-size: 15px; }
+
+    .section { margin-bottom: 48px; }
+    .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+
+    /* Color Scale */
+    .scale { display: flex; gap: 0; border-radius: 12px; overflow: hidden; margin-bottom: 12px; }
+    .swatch {
+      flex: 1;
+      height: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      gap: 4px;
+    }
+    .swatch .label { font-size: 11px; font-weight: 700; opacity: 0.8; }
+    .swatch .hex { font-size: 10px; font-weight: 500; opacity: 0.7; }
+
+    /* Buttons */
+    .btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+    .btn {
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn:hover { transform: translateY(-1px); }
+
+    /* Cards */
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid #e2e8f0;
+    }
+    .card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .card p { font-size: 13px; color: #64748b; line-height: 1.5; }
+
+    /* Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* Sidebar mock */
+    .layout-mock {
+      display: flex;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      height: 320px;
+    }
+    .sidebar-mock {
+      width: 220px;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .sidebar-mock .logo { font-weight: 800; font-size: 16px; margin-bottom: 16px; }
+    .sidebar-mock .nav-item {
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .sidebar-mock .nav-item.active { font-weight: 600; }
+    .main-mock {
+      flex: 1;
+      background: #F8FAFB;
+      padding: 24px;
+    }
+    .main-mock h2 { font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+
+    /* Stats */
+    .stats { display: flex; gap: 12px; }
+    .stat {
+      flex: 1;
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      background: white;
+    }
+    .stat .num { font-size: 24px; font-weight: 800; }
+    .stat .lbl { font-size: 11px; color: #64748b; font-weight: 500; }
+
+    /* Input */
+    .input-row { display: flex; gap: 12px; align-items: center; }
+    .input {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1.5px solid #e2e8f0;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s;
+      width: 260px;
+    }
+
+    .divider { height: 1px; background: #e2e8f0; margin: 32px 0; }
+
+    /* Header mock */
+    .header-mock {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      margin-bottom: 16px;
+    }
+    .header-mock .logo-text { font-weight: 800; font-size: 18px; }
+    .header-mock nav { display: flex; gap: 24px; }
+    .header-mock nav a { font-size: 14px; font-weight: 500; text-decoration: none; color: #64748b; }
+    .header-mock nav a.active { font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<h1>MediAgenda — Color Scale Preview</h1>
+<p class="subtitle">Base color: #CAF4FD · Light mode · Azul médico</p>
+
+<!-- ==================== SCALE ==================== -->
+<div class="section">
+  <div class="section-title">Color Scale — "medical"</div>
+  <div class="scale">
+    <div class="swatch" style="background:#EAFBFE; color:#0A3040"><span class="label">50</span><span class="hex">#EAFBFE</span></div>
+    <div class="swatch" style="background:#CAF4FD; color:#0A3040"><span class="label">100</span><span class="hex">#CAF4FD</span></div>
+    <div class="swatch" style="background:#9AEBFB; color:#0A3040"><span class="label">200</span><span class="hex">#9AEBFB</span></div>
+    <div class="swatch" style="background:#5EDCF6; color:#0A3040"><span class="label">300</span><span class="hex">#5EDCF6</span></div>
+    <div class="swatch" style="background:#2BC8ED; color:#ffffff"><span class="label">400</span><span class="hex">#2BC8ED</span></div>
+    <div class="swatch" style="background:#0CADD4; color:#ffffff"><span class="label">500</span><span class="hex">#0CADD4</span></div>
+    <div class="swatch" style="background:#088BB2; color:#ffffff"><span class="label">600</span><span class="hex">#088BB2</span></div>
+    <div class="swatch" style="background:#076F90; color:#ffffff"><span class="label">700</span><span class="hex">#076F90</span></div>
+    <div class="swatch" style="background:#095A76; color:#ffffff"><span class="label">800</span><span class="hex">#095A76</span></div>
+    <div class="swatch" style="background:#0C4A63; color:#ffffff"><span class="label">900</span><span class="hex">#0C4A63</span></div>
+    <div class="swatch" style="background:#0A3040; color:#ffffff"><span class="label">950</span><span class="hex">#0A3040</span></div>
+  </div>
+</div>
+
+<!-- ==================== HEADER ==================== -->
+<div class="section">
+  <div class="section-title">Sticky Header</div>
+  <div class="header-mock">
+    <span class="logo-text" style="color: #088BB2">Medi<span style="color:#0A3040">Agenda</span></span>
+    <nav>
+      <a href="#" style="color:#0A3040" class="active">Demo</a>
+      <a href="#">Funciones</a>
+      <a href="#">Precios</a>
+      <a href="#">FAQ</a>
+    </nav>
+    <div class="btn-row" style="margin:0">
+      <button class="btn" style="background:#088BB2; color:white;">Ver Demo</button>
+      <button class="btn" style="background:#EAFBFE; color:#088BB2; border: 1.5px solid #9AEBFB;">Contactar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== BUTTONS ==================== -->
+<div class="section">
+  <div class="section-title">Buttons</div>
+
+  <p style="font-size:13px; color:#64748b; margin-bottom:12px; font-weight:500;">Primary (600 bg, 700 hover)</p>
+  <div class="btn-row">
+    <button class="btn" style="background:#088BB2; color:white;">Ver demo en vivo</button>
+    <button class="btn" style="background:#076F90; color:white;">Hover state</button>
+    <button class="btn" style="background:#095A76; color:white;">Active/pressed</button>
+    <button class="btn" style="background:#088BB2; color:white; opacity:0.5;">Disabled</button>
+  </div>
+
+  <p style="font-size:13px; color:#64748b; margin-bottom:12px; font-weight:500;">Secondary / Outline</p>
+  <div class="btn-row">
+    <button class="btn" style="background:#EAFBFE; color:#088BB2; border: 1.5px solid #9AEBFB;">Contactanos</button>
+    <button class="btn" style="background:#CAF4FD; color:#076F90; border: 1.5px solid #5EDCF6;">Hover</button>
+    <button class="btn" style="background:white; color:#088BB2; border: 1.5px solid #9AEBFB;">Ghost</button>
+  </div>
+
+  <p style="font-size:13px; color:#64748b; margin-bottom:12px; font-weight:500;">Accent (para features IA) — violet</p>
+  <div class="btn-row">
+    <button class="btn" style="background:#7C3AED; color:white;">Notas con IA</button>
+    <button class="btn" style="background:#6D28D9; color:white;">Hover</button>
+  </div>
+</div>
+
+<!-- ==================== BADGES ==================== -->
+<div class="section">
+  <div class="section-title">Badges & Tags</div>
+  <div class="btn-row">
+    <span class="badge" style="background:#EAFBFE; color:#088BB2;">Para medicos en Mexico</span>
+    <span class="badge" style="background:#F3E8FF; color:#7C3AED;">IA</span>
+    <span class="badge" style="background:#ECFDF5; color:#059669;">Confirmada</span>
+    <span class="badge" style="background:#FEF3C7; color:#D97706;">Pendiente</span>
+    <span class="badge" style="background:#FEE2E2; color:#DC2626;">Cancelada</span>
+    <span class="badge" style="background:#CAF4FD; color:#076F90;">7 paginas</span>
+  </div>
+</div>
+
+<!-- ==================== CARDS ==================== -->
+<div class="section">
+  <div class="section-title">Feature Cards</div>
+  <div class="cards">
+    <div class="card" style="background:white;">
+      <div style="width:36px;height:36px;border-radius:8px;background:#EAFBFE;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:18px">📅</div>
+      <h3>Agenda Inteligente</h3>
+      <p>Gestiona citas, horarios y disponibilidad desde un solo lugar.</p>
+    </div>
+    <div class="card" style="background:white; border-color:#9AEBFB;">
+      <div style="width:36px;height:36px;border-radius:8px;background:#F3E8FF;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:18px">🧠</div>
+      <h3 style="display:flex;align-items:center;gap:6px;">Notas Clinicas <span class="badge" style="background:#F3E8FF; color:#7C3AED; font-size:10px;">IA</span></h3>
+      <p>Genera notas clinicas automaticamente con inteligencia artificial.</p>
+    </div>
+    <div class="card" style="background:white;">
+      <div style="width:36px;height:36px;border-radius:8px;background:#EAFBFE;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:18px">👥</div>
+      <h3>Expedientes</h3>
+      <p>Historial completo de pacientes, notas y citas en un solo lugar.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== INPUTS ==================== -->
+<div class="section">
+  <div class="section-title">Form Elements</div>
+  <div class="input-row">
+    <input class="input" placeholder="Buscar paciente..." style="border-color:#9AEBFB;" onfocus="this.style.borderColor='#088BB2'; this.style.boxShadow='0 0 0 3px rgba(8,139,178,0.1)'" onblur="this.style.borderColor='#9AEBFB'; this.style.boxShadow='none'">
+    <button class="btn" style="background:#088BB2; color:white;">Buscar</button>
+  </div>
+</div>
+
+<!-- ==================== LAYOUT MOCK ==================== -->
+<div class="section">
+  <div class="section-title">Dashboard Layout — Sidebar</div>
+  <div class="layout-mock">
+    <div class="sidebar-mock" style="background:#0A3040; color:white;">
+      <div class="logo" style="color:#5EDCF6;">Medi<span style="color:white">Agenda</span></div>
+      <div class="nav-item active" style="background:#088BB2; color:white;">📊 Hoy</div>
+      <div class="nav-item" style="color:rgba(255,255,255,0.6);">📅 Calendario</div>
+      <div class="nav-item" style="color:rgba(255,255,255,0.6);">📋 Citas</div>
+      <div class="nav-item" style="color:rgba(255,255,255,0.6);">👥 Pacientes</div>
+      <div class="nav-item" style="color:rgba(255,255,255,0.6); display:flex; align-items:center; gap:6px;">🧠 Notas <span class="badge" style="background:rgba(124,58,237,0.2); color:#C4B5FD; font-size:9px; padding: 2px 6px;">IA</span></div>
+      <div class="nav-item" style="color:rgba(255,255,255,0.6); display:flex; align-items:center; gap:6px;">💬 Mensajes <span class="badge" style="background:rgba(124,58,237,0.2); color:#C4B5FD; font-size:9px; padding: 2px 6px;">IA</span></div>
+      <div class="nav-item" style="color:rgba(255,255,255,0.6);">📈 Analitica</div>
+    </div>
+    <div class="main-mock">
+      <h2>Buenos dias, Dr. Mendoza</h2>
+      <div class="stats">
+        <div class="stat">
+          <div class="num" style="color:#088BB2;">8</div>
+          <div class="lbl">Citas hoy</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color:#059669;">6</div>
+          <div class="lbl">Confirmadas</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color:#D97706;">2</div>
+          <div class="lbl">Pendientes</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color:#088BB2;">32</div>
+          <div class="lbl">Esta semana</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ==================== ALTERNATE SIDEBAR: LIGHT ==================== -->
+<div class="section">
+  <div class="section-title">Dashboard Layout — Light Sidebar (alternativa)</div>
+  <div class="layout-mock">
+    <div class="sidebar-mock" style="background:white; color:#0A3040; border-right: 1px solid #e2e8f0;">
+      <div class="logo" style="color:#088BB2;">Medi<span style="color:#0A3040">Agenda</span></div>
+      <div class="nav-item active" style="background:#EAFBFE; color:#088BB2;">📊 Hoy</div>
+      <div class="nav-item" style="color:#64748b;">📅 Calendario</div>
+      <div class="nav-item" style="color:#64748b;">📋 Citas</div>
+      <div class="nav-item" style="color:#64748b;">👥 Pacientes</div>
+      <div class="nav-item" style="color:#64748b; display:flex; align-items:center; gap:6px;">🧠 Notas <span class="badge" style="background:#F3E8FF; color:#7C3AED; font-size:9px; padding: 2px 6px;">IA</span></div>
+      <div class="nav-item" style="color:#64748b; display:flex; align-items:center; gap:6px;">💬 Mensajes <span class="badge" style="background:#F3E8FF; color:#7C3AED; font-size:9px; padding: 2px 6px;">IA</span></div>
+      <div class="nav-item" style="color:#64748b;">📈 Analitica</div>
+    </div>
+    <div class="main-mock">
+      <h2>Buenos dias, Dr. Mendoza</h2>
+      <div class="stats">
+        <div class="stat">
+          <div class="num" style="color:#088BB2;">8</div>
+          <div class="lbl">Citas hoy</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color:#059669;">6</div>
+          <div class="lbl">Confirmadas</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color:#D97706;">2</div>
+          <div class="lbl">Pendientes</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color:#088BB2;">32</div>
+          <div class="lbl">Esta semana</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+<p style="font-size:12px; color:#94a3b8; text-align:center; padding: 20px 0;">
+  Escala: 50 #EAFBFE · 100 #CAF4FD · 200 #9AEBFB · 300 #5EDCF6 · 400 #2BC8ED · 500 #0CADD4 · 600 #088BB2 · 700 #076F90 · 800 #095A76 · 900 #0C4A63 · 950 #0A3040
+</p>
+
+</body>
+</html>
