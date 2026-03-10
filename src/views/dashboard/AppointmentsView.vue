@@ -248,18 +248,18 @@ function updateStatus(newStatus) {
 </script>
 
 <template>
-  <div class="h-full flex flex-col p-5 sm:p-6 lg:p-7">
+  <div class="md:h-full md:flex md:flex-col p-4 sm:p-6 lg:p-7 space-y-4 md:space-y-0">
 
     <!-- Header -->
     <motion.div
       :initial="{ opacity: 0, y: -8 }"
       :animate="{ opacity: 1, y: 0 }"
       :transition="{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }"
-      class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-5 flex-shrink-0"
+      class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4 md:mb-5 flex-shrink-0"
     >
       <div>
-        <h1 class="text-[1.65rem] font-extrabold text-foreground tracking-tight">Citas</h1>
-        <p class="mt-0.5 text-[13px] text-muted-foreground">{{ filteredAppointments.length }} citas encontradas</p>
+        <h1 class="text-[1.4rem] sm:text-[1.65rem] font-extrabold text-foreground tracking-tight">Citas</h1>
+        <p class="mt-0.5 text-[12px] sm:text-[13px] text-muted-foreground">{{ filteredAppointments.length }} citas encontradas</p>
       </div>
 
       <!-- Quick stats (inline) -->
@@ -287,14 +287,14 @@ function updateStatus(newStatus) {
       :initial="{ opacity: 0, y: 6 }"
       :animate="{ opacity: 1, y: 0 }"
       :transition="{ duration: 0.35, delay: 0.08, ease: [0.16, 1, 0.3, 1] }"
-      class="flex flex-wrap items-center gap-2 mb-5 flex-shrink-0"
+      class="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 md:mb-5 flex-shrink-0"
     >
       <!-- Period pills -->
-      <div class="flex items-center bg-muted rounded-lg p-0.5">
+      <div class="flex items-center bg-muted rounded-lg p-0.5 flex-shrink-0">
         <button
           v-for="opt in dateRangeOptions"
           :key="opt.value"
-          class="px-3 py-1.5 text-[12px] font-medium rounded-md transition-all"
+          class="px-2.5 sm:px-3 py-1.5 text-[11px] sm:text-[12px] font-medium rounded-md transition-all whitespace-nowrap"
           :class="dateRangeFilter === opt.value
             ? 'bg-white text-foreground shadow-sm'
             : 'text-muted-foreground hover:text-foreground'"
@@ -304,15 +304,15 @@ function updateStatus(newStatus) {
         </button>
       </div>
 
-      <!-- Status chip filters -->
-      <div class="flex items-center gap-1.5 ml-1">
+      <!-- Status chip filters — horizontal scroll on mobile -->
+      <div class="flex items-center gap-1.5 sm:ml-1 overflow-x-auto scrollbar-hide pb-0.5">
         <button
           v-for="opt in statusOptions.filter(o => o.value !== 'todos')"
           :key="opt.value"
-          class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] font-medium rounded-lg border transition-all"
+          class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] sm:text-[12px] font-medium rounded-lg border transition-all whitespace-nowrap flex-shrink-0"
           :class="statusFilter === opt.value
             ? 'bg-foreground text-white border-foreground'
-            : 'bg-white text-muted-foreground bg-white text-muted-foreground border-border hover:border-border hover:text-foreground'"
+            : 'bg-white text-muted-foreground border-border hover:border-border hover:text-foreground'"
           @click="statusFilter = statusFilter === opt.value ? 'todos' : opt.value"
         >
           {{ opt.label }}
@@ -326,12 +326,12 @@ function updateStatus(newStatus) {
       :initial="{ opacity: 0, y: 12 }"
       :animate="{ opacity: 1, y: 0 }"
       :transition="{ duration: 0.45, delay: 0.12, ease: [0.16, 1, 0.3, 1] }"
-      class="flex-1 min-h-0 bg-white border border-border rounded-2xl shadow-card flex flex-col"
+      class="md:flex-1 md:min-h-0 bg-white border border-border rounded-xl sm:rounded-2xl shadow-card flex flex-col"
     >
 
       <!-- Table header bar -->
-      <div class="flex items-center justify-between px-5 pt-4 pb-3 flex-shrink-0">
-        <h3 class="text-[15px] font-bold text-foreground">Lista de citas</h3>
+      <div class="flex items-center justify-between px-4 sm:px-5 pt-3 sm:pt-4 pb-2 sm:pb-3 flex-shrink-0">
+        <h3 class="text-[14px] sm:text-[15px] font-bold text-foreground">Lista de citas</h3>
         <div class="flex items-center gap-2">
           <div class="relative">
             <Search class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/70" />
@@ -339,17 +339,17 @@ function updateStatus(newStatus) {
               v-model="searchQuery"
               type="text"
               placeholder="Buscar paciente..."
-              class="h-8 pl-8 pr-3 text-xs bg-muted border border-border rounded-lg outline-none focus:border-medical-400 focus:ring-1 focus:ring-medical-400/20 transition-all w-48"
+              class="h-8 pl-8 pr-3 text-xs bg-muted border border-border rounded-lg outline-none focus:border-medical-400 focus:ring-1 focus:ring-medical-400/20 transition-all w-36 sm:w-48"
             />
           </div>
-          <button class="text-muted-foreground/40 hover:text-muted-foreground p-1 transition-colors">
+          <button class="text-muted-foreground/40 hover:text-muted-foreground p-1 transition-colors hidden sm:block">
             <MoreVertical class="w-4 h-4" />
           </button>
         </div>
       </div>
 
       <!-- Desktop table -->
-      <div class="flex-1 min-h-0 overflow-auto px-5 hidden md:block">
+      <div class="md:flex-1 md:min-h-0 md:overflow-auto px-5 hidden md:block">
         <table class="w-full text-[13px]">
           <thead class="sticky top-0 bg-white z-10">
             <tr class="border-b border-border/60">
@@ -426,11 +426,11 @@ function updateStatus(newStatus) {
       </div>
 
       <!-- Mobile card list -->
-      <div class="flex-1 min-h-0 overflow-auto px-5 md:hidden space-y-2 pb-4">
+      <div class="px-4 sm:px-5 md:hidden space-y-2 pb-4">
         <div
           v-for="apt in paginatedAppointments"
           :key="apt.id"
-          class="rounded-xl border border-border/60 shadow-card p-3.5 active:bg-muted transition-colors cursor-pointer"
+          class="rounded-xl border border-border/60 shadow-card p-3 active:bg-muted transition-colors cursor-pointer overflow-hidden"
           @click="openDetail(apt)"
         >
           <div class="flex items-center gap-3 mb-2">
@@ -647,3 +647,13 @@ function updateStatus(newStatus) {
     </Sheet>
   </div>
 </template>
+
+<style scoped>
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+</style>

@@ -171,7 +171,7 @@ function goBack() {
 </script>
 
 <template>
-  <div class="h-full flex flex-col p-5 sm:p-6 lg:p-7">
+  <div class="md:h-full md:flex md:flex-col p-4 sm:p-6 lg:p-7">
 
     <!-- Not found -->
     <div v-if="!patient" class="flex-1 flex flex-col items-center justify-center">
@@ -344,7 +344,7 @@ function goBack() {
         :initial="{ opacity: 0, y: 8 }"
         :animate="{ opacity: 1, y: 0 }"
         :transition="{ duration: 0.4, delay: 0.2, ease: [0.16, 1, 0.3, 1] }"
-        class="flex-1 min-h-0 bg-white border border-border rounded-2xl flex flex-col shadow-sm"
+        class="md:flex-1 md:min-h-0 bg-white border border-border rounded-2xl flex flex-col shadow-sm"
       >
 
         <!-- ═══ CITAS TAB ═══ -->
@@ -353,7 +353,7 @@ function goBack() {
             <h3 class="text-[15px] font-bold text-foreground">Historial de citas</h3>
           </div>
 
-          <div class="flex-1 min-h-0 overflow-auto px-5">
+          <div class="md:flex-1 md:min-h-0 md:overflow-auto px-4 sm:px-5">
             <!-- Desktop table -->
             <table v-if="patientAppointments.length > 0" class="w-full text-[13px] hidden md:table">
               <thead class="sticky top-0 bg-white z-10">
@@ -432,7 +432,7 @@ function goBack() {
             <h3 class="text-[15px] font-bold text-foreground">Notas clínicas</h3>
           </div>
 
-          <div class="flex-1 min-h-0 overflow-auto px-5 pb-5">
+          <div class="md:flex-1 md:min-h-0 md:overflow-auto px-4 sm:px-5 pb-5">
             <div v-if="patientNotes.length > 0" class="space-y-4">
               <div
                 v-for="note in patientNotes"

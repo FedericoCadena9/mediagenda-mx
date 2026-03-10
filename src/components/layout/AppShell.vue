@@ -26,7 +26,7 @@ const mobileMenuOpen = ref(false)
         @close="mobileMenuOpen = false"
       />
 
-      <div class="flex-1 flex flex-col min-h-0">
+      <div class="flex-1 flex flex-col min-h-0 min-w-0">
         <!-- Mobile-only header -->
         <div class="md:hidden flex-shrink-0 bg-white/90 backdrop-blur-xl border-b border-border shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
           <div class="flex items-center justify-between h-[52px] px-4">
@@ -41,7 +41,7 @@ const mobileMenuOpen = ref(false)
           </div>
         </div>
 
-        <main class="flex-1 min-h-0 overflow-auto bg-background">
+        <main class="flex-1 min-h-0 overflow-x-hidden overflow-y-auto bg-background">
           <router-view v-slot="{ Component }">
             <AnimatePresence mode="wait">
               <motion.div

@@ -29,7 +29,7 @@ function handleLogout() {
 
 <template>
   <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-border shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
-    <div class="flex items-center justify-between h-[60px] px-4 sm:px-6">
+    <div class="flex items-center justify-between h-[52px] sm:h-[60px] px-3 sm:px-6">
       <!-- Left: hamburger -->
       <div class="flex items-center gap-3">
         <Button

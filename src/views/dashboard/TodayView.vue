@@ -257,7 +257,7 @@ function statusLabel(status) {
 </script>
 
 <template>
-  <div class="p-5 sm:p-6 lg:p-7 lg:h-full lg:flex lg:flex-col lg:gap-4 space-y-4 lg:space-y-0">
+  <div class="p-4 sm:p-6 lg:p-7 lg:h-full lg:flex lg:flex-col lg:gap-4 space-y-3 sm:space-y-4 lg:space-y-0">
 
     <!-- ═══ ROW 0: HEADER ═══ -->
     <motion.div
@@ -266,13 +266,13 @@ function statusLabel(status) {
       :transition="{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }"
       class="flex-shrink-0"
     >
-      <h1 class="text-[1.65rem] font-extrabold text-foreground tracking-tight">Dashboard</h1>
-      <p class="mt-0.5 text-[13px] text-muted-foreground">Reportes del consultorio actualizados en tiempo real</p>
+      <h1 class="text-[1.4rem] sm:text-[1.65rem] font-extrabold text-foreground tracking-tight">Dashboard</h1>
+      <p class="mt-0.5 text-[12px] sm:text-[13px] text-muted-foreground">Reportes del consultorio actualizados en tiempo real</p>
     </motion.div>
 
     <!-- ═══ ROW 1: STATS ═══ -->
     <motion.div
-      class="grid grid-cols-2 lg:grid-cols-4 gap-3 flex-shrink-0"
+      class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 flex-shrink-0"
       :initial="'hidden'"
       :animate="'visible'"
       :transition="{ staggerChildren: 0.06 }"
@@ -287,28 +287,28 @@ function statusLabel(status) {
         :transition="{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }"
       >
         <motion.div
-          class="border border-border rounded-2xl shadow-card p-4 lg:p-5"
+          class="border border-border rounded-xl sm:rounded-2xl shadow-card p-3 sm:p-4 lg:p-5"
           :whileHover="{ y: -2, transition: { duration: 0.2 } }"
         >
-          <div class="flex items-center justify-between mb-4">
-            <p class="text-[13px] font-medium text-muted-foreground">{{ stat.title }}</p>
-            <button class="text-muted-foreground/40 hover:text-muted-foreground -mr-1">
+          <div class="flex items-center justify-between mb-2 sm:mb-4">
+            <p class="text-[11px] sm:text-[13px] font-medium text-muted-foreground leading-tight">{{ stat.title }}</p>
+            <button class="text-muted-foreground/40 hover:text-muted-foreground -mr-1 hidden sm:block">
               <MoreVertical class="w-4 h-4" />
             </button>
           </div>
-          <p class="text-[1.7rem] font-extrabold text-foreground tracking-tight leading-none">{{ stat.value }}</p>
-          <p class="mt-2 text-[11.5px] text-muted-foreground">
+          <p class="text-[1.35rem] sm:text-[1.7rem] font-extrabold text-foreground tracking-tight leading-none">{{ stat.value }}</p>
+          <p class="mt-1.5 sm:mt-2 text-[10px] sm:text-[11.5px] text-muted-foreground leading-tight">
             <span class="font-semibold" :class="stat.positive ? 'text-emerald-500' : 'text-red-500'">{{ stat.change }}</span>
-            <TrendingUp v-if="stat.positive" class="w-3 h-3 inline ml-0.5 text-emerald-500" />
-            <TrendingDown v-else class="w-3 h-3 inline ml-0.5 text-red-500" />
-            <span class="ml-1">desde la semana pasada</span>
+            <TrendingUp v-if="stat.positive" class="w-2.5 sm:w-3 h-2.5 sm:h-3 inline ml-0.5 text-emerald-500" />
+            <TrendingDown v-else class="w-2.5 sm:w-3 h-2.5 sm:h-3 inline ml-0.5 text-red-500" />
+            <span class="ml-1 hidden sm:inline">desde la semana pasada</span>
           </p>
         </motion.div>
       </motion.div>
     </motion.div>
 
     <!-- ═══ ROW 2: AI BANNER + SCHEDULE ═══ -->
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 flex-shrink-0 lg:h-[200px] overflow-hidden">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-3 sm:gap-4 flex-shrink-0 lg:h-[200px] overflow-hidden">
       <!-- AI ASSISTANT (3/5) -->
       <motion.div
         class="lg:col-span-3 overflow-hidden"
@@ -342,13 +342,13 @@ function statusLabel(status) {
                 <h3 class="text-sm font-bold text-white">Hola, soy MediBot</h3>
                 <span class="text-[9px] font-bold uppercase tracking-widest text-emerald-300/60 bg-white/[0.08] px-2 py-0.5 rounded-full border border-white/[0.06] ml-1">AI</span>
               </div>
-              <div class="flex flex-wrap gap-1.5 mt-3">
+              <div class="flex gap-1.5 mt-3 overflow-x-auto scrollbar-hide sm:flex-wrap sm:overflow-x-visible pb-1 sm:pb-0 -mx-1 px-1">
                 <motion.button
                   v-for="action in aiActions"
                   :key="action.label"
                   :whileHover="{ scale: 1.04, transition: { duration: 0.15 } }"
                   :whilePress="{ scale: 0.96 }"
-                  class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/[0.07] hover:bg-white/[0.14] text-white/70 hover:text-white text-[11px] font-medium transition-all duration-200 border border-white/[0.06]"
+                  class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/[0.07] hover:bg-white/[0.14] text-white/70 hover:text-white text-[11px] font-medium transition-all duration-200 border border-white/[0.06] whitespace-nowrap flex-shrink-0 sm:flex-shrink"
                   @click="handleQuickAction(action)"
                 >
                   <component :is="action.icon" class="w-3 h-3 text-emerald-300" />
@@ -440,19 +440,40 @@ function statusLabel(status) {
       :animate="{ opacity: 1, y: 0 }"
       :transition="{ duration: 0.5, delay: 0.25, ease: [0.16, 1, 0.3, 1] }"
     >
-      <div class="border border-border rounded-2xl shadow-card h-full flex flex-col">
-        <div class="flex items-center justify-between px-5 pt-4 pb-2 flex-shrink-0">
-          <h3 class="text-[15px] font-bold text-foreground">Historial médico</h3>
+      <div class="border border-border rounded-xl sm:rounded-2xl shadow-card h-full flex flex-col">
+        <div class="flex items-center justify-between px-4 sm:px-5 pt-3 sm:pt-4 pb-2 flex-shrink-0">
+          <h3 class="text-[14px] sm:text-[15px] font-bold text-foreground">Historial médico</h3>
           <div class="flex items-center gap-1.5">
-            <span class="text-[11px] font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-lg cursor-pointer hover:bg-muted transition-colors flex items-center gap-1">
+            <span class="text-[10px] sm:text-[11px] font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-lg cursor-pointer hover:bg-muted transition-colors flex items-center gap-1">
               <Filter class="w-3 h-3" /> Mes
             </span>
-            <span class="text-[11px] font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-lg cursor-pointer hover:bg-muted transition-colors flex items-center gap-1">
+            <span class="hidden sm:flex text-[11px] font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-lg cursor-pointer hover:bg-muted transition-colors items-center gap-1">
               <ArrowUpDown class="w-3 h-3" /> Ordenar
             </span>
           </div>
         </div>
-        <div class="px-5 pb-4 flex-1 min-h-0 overflow-y-auto">
+
+        <!-- Mobile: Card list -->
+        <div class="sm:hidden flex-1 min-h-0 overflow-y-auto px-4 pb-4 space-y-2">
+          <div
+            v-for="record in medicalRecords"
+            :key="record.id"
+            class="rounded-lg border border-border/50 p-3"
+          >
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[10px] text-muted-foreground">{{ record.date }}</span>
+              <span class="inline-flex items-center gap-1 text-[10px] font-semibold" :class="statusTextClass(record.status)">
+                <span class="w-1.5 h-1.5 rounded-full" :class="statusDotClass(record.status)" />
+                {{ statusLabel(record.status) }}
+              </span>
+            </div>
+            <p class="text-[12px] font-semibold text-foreground leading-tight">{{ record.diagnosis }}</p>
+            <p class="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">{{ record.treatment }}</p>
+          </div>
+        </div>
+
+        <!-- Desktop: Table -->
+        <div class="hidden sm:block px-5 pb-4 flex-1 min-h-0 overflow-y-auto">
           <table class="w-full text-[13px]">
             <thead class="sticky top-0 bg-white z-10">
               <tr class="border-b border-border/60">
@@ -621,6 +642,13 @@ function statusLabel(status) {
 </template>
 
 <style scoped>
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
 .medibot-banner {
   box-shadow: 0 8px 32px -4px rgba(5, 150, 105, 0.15), 0 4px 16px -2px rgba(16, 185, 129, 0.1);
 }
