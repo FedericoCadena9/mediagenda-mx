@@ -11,8 +11,7 @@ import {
   Search,
   Filter,
   MoreVertical,
-  Pencil,
-  Trash2,
+  Eye,
   ChevronLeft,
   ChevronRight,
   Users,
@@ -248,11 +247,8 @@ function goToPage(p) {
               <!-- Actions -->
               <td class="py-3">
                 <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button class="p-1.5 rounded-lg text-muted-foreground/70 hover:text-medical-600 hover:bg-medical-50 transition-colors" @click.stop>
-                    <Pencil class="w-3.5 h-3.5" />
-                  </button>
-                  <button class="p-1.5 rounded-lg text-muted-foreground/70 hover:text-red-500 hover:bg-red-50 transition-colors" @click.stop>
-                    <Trash2 class="w-3.5 h-3.5" />
+                  <button class="p-1.5 rounded-lg text-muted-foreground/70 hover:text-medical-600 hover:bg-medical-50 transition-colors" @click.stop="goToPatient(patient.id)">
+                    <Eye class="w-3.5 h-3.5" />
                   </button>
                 </div>
               </td>

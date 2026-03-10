@@ -20,9 +20,6 @@ const props = defineProps({
   x: { type: [Number, Date], required: false },
 });
 
-// TODO: currently we use `createElement` and `render` to render the
-// const chartContext = useChart(null)
-
 const payload = computed(() => {
   return Object.entries(props.payload)
     .map(([key, value]) => {

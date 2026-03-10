@@ -54,7 +54,7 @@ onUnmounted(() => {
             rel="noopener noreferrer"
             class="inline-flex items-center rounded-lg border border-[#e2e8f0] bg-white px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold text-[#0A3040] transition-all duration-200 hover:border-[#088BB2]/30 hover:bg-[#EAFBFE]/50"
           >
-            $499/mes
+            Contáctanos
           </a>
         </div>
       </div>

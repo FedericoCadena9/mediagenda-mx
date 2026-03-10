@@ -45,7 +45,7 @@ const backdropRef = ref(null)
 const dialogRef = ref(null)
 
 const aiActions = [
-  { label: 'Ver agenda de doctores', icon: CalendarCheck, prompt: '¿Cuál es la agenda de hoy del Dr. Mendoza?' },
+  { label: 'Ver agenda de hoy', icon: CalendarCheck, prompt: '¿Cuál es la agenda de hoy?' },
   { label: 'Revisar citas de hoy', icon: CalendarDays, prompt: '¿Cuáles son las citas de hoy?' },
   { label: 'Generar reporte', icon: FileBarChart, prompt: 'Dame un reporte general del consultorio este mes' },
   { label: 'Ver flujo de pacientes', icon: Activity, prompt: '¿Cómo está el flujo de pacientes esta semana?' },
@@ -132,11 +132,19 @@ function handleChatKeydown(e) {
 const totalPatients = computed(() => patientsStore.patients.length)
 const totalAppointments = computed(() => appointmentsStore.appointments.length)
 
+const newPatientsThisMonth = computed(() => {
+  const now = new Date()
+  const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`
+  return patientsStore.patients.filter((p) => p.createdAt >= monthStart).length
+})
+
+const todayCount = computed(() => appointmentsStore.todayAppointments.length)
+
 const statsCards = computed(() => [
-  { title: 'Total pacientes', value: totalPatients.value, change: '13.4%', positive: true },
-  { title: 'Pacientes nuevos', value: 12, change: '3.2%', positive: false },
-  { title: 'Citas', value: totalAppointments.value, change: '0.4%', positive: true },
-  { title: 'Doctores', value: 1, change: '2.8%', positive: true },
+  { title: 'Total pacientes', value: totalPatients.value, change: `${totalPatients.value}`, positive: true },
+  { title: 'Pacientes nuevos', value: newPatientsThisMonth.value, change: 'este mes', positive: true },
+  { title: 'Citas hoy', value: todayCount.value, change: `${totalAppointments.value} total`, positive: true },
+  { title: 'No-show rate', value: `${appointmentsStore.noShowRate}%`, change: appointmentsStore.noShowRate <= 10 ? 'bajo' : 'alto', positive: appointmentsStore.noShowRate <= 10 },
 ])
 
 // ── Today appointments ──────────────────────────────────────────────

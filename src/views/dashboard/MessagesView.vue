@@ -20,6 +20,7 @@ import {
 import { usePatientsStore } from '@/stores/patients'
 import { useAppointmentsStore } from '@/stores/appointments'
 import { useServicesStore } from '@/stores/services'
+import { useAuthStore } from '@/stores/auth'
 import { callGemini } from '@/services/gemini'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -29,6 +30,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 const patientsStore = usePatientsStore()
 const appointmentsStore = useAppointmentsStore()
 const servicesStore = useServicesStore()
+const authStore = useAuthStore()
 
 const rootRef = ref(null)
 const phoneShellRef = ref(null)
@@ -473,7 +475,7 @@ async function generateMessage() {
     ? `${contextDateLabel.value}${contextTimeLabel.value ? ` a las ${contextTimeLabel.value}` : ''}`
     : 'sin mencionar fecha u horario exactos'
 
-  const systemPrompt = `Eres el asistente de WhatsApp del Dr. Carlos Mendoza, medico general en Queretaro. Redacta un mensaje personalizado y profesional en espanol mexicano para ${selectedPatient.value.fullName}.
+  const systemPrompt = `Eres el asistente de WhatsApp del ${authStore.doctorName}, medico general en ${authStore.clinicCity}. Redacta un mensaje personalizado y profesional en espanol mexicano para ${selectedPatient.value.fullName}.
 
 Tipo de mensaje: ${selectedType.value.label}
 Objetivo del mensaje: ${selectedType.value.promptHint}
@@ -492,7 +494,7 @@ Instrucciones:
 - ${includeSchedule.value ? 'Incluya fecha y hora si existe contexto suficiente.' : 'Evite mencionar fecha y hora exactas.'}
 - ${includeReplyCTA.value ? 'Invite a responder para confirmar, reagendar o resolver dudas.' : 'No pida respuesta explicita.'}
 - ${mentionVisitCount.value ? `Puede aprovechar que es un paciente con ${patientAppointments.value.length} visitas registradas para sonar cercano.` : 'No mencione el numero de visitas previas.'}
-- Cierre con: Consultorio Dr. Mendoza, Av. Universidad 150, Queretaro. Tel: 442 123 4567.
+- Cierre con: Consultorio ${authStore.doctorName}, ${authStore.clinicAddress}.
 - Entregue solo el mensaje final, listo para copiar en WhatsApp.`
 
   try {

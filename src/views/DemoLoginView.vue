@@ -10,7 +10,7 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const email = ref('demo@consultia.mx')
-const password = ref('demo1234')
+const password = ref('Consultia#Demo2025')
 const showPassword = ref(false)
 const rememberMe = ref(true)
 const mounted = ref(false)
@@ -188,9 +188,9 @@ function handleLogin() {
                 </div>
                 <span class="text-sm text-muted-foreground group-hover:text-foreground transition-colors select-none">Recordarme</span>
               </label>
-              <a href="#" class="text-sm font-semibold text-medical-600 hover:text-medical-700 transition-colors">
+              <span class="text-sm font-semibold text-muted-foreground/50 cursor-not-allowed select-none" title="No disponible en demo">
                 ¿Olvidaste tu contraseña?
-              </a>
+              </span>
             </div>
 
             <!-- Submit -->
@@ -209,12 +209,14 @@ function handleLogin() {
             <div class="flex-1 h-px bg-border"></div>
           </div>
 
-          <!-- Google login -->
+          <!-- Google login (disabled in demo) -->
           <button
             type="button"
-            class="w-full h-12 flex items-center justify-center gap-3 rounded-xl border border-border bg-white hover:bg-muted/60 text-[0.95rem] font-semibold text-foreground transition-all duration-200 hover:border-border active:scale-[0.98]"
+            disabled
+            class="w-full h-12 flex items-center justify-center gap-3 rounded-xl border border-border bg-muted/40 text-[0.95rem] font-semibold text-muted-foreground/50 cursor-not-allowed"
+            title="No disponible en demo"
           >
-            <svg class="w-5 h-5" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 opacity-40" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
               <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
@@ -223,12 +225,12 @@ function handleLogin() {
             Continuar con Google
           </button>
 
-          <!-- Register link -->
-          <p class="mt-7 text-center text-sm text-muted-foreground">
+          <!-- Register link (disabled in demo) -->
+          <p class="mt-7 text-center text-sm text-muted-foreground/50">
             ¿No tienes cuenta?
-            <a href="#" class="font-semibold text-medical-600 hover:text-medical-700 transition-colors ml-1">
+            <span class="font-semibold ml-1 cursor-not-allowed" title="No disponible en demo">
               Regístrate aquí
-            </a>
+            </span>
           </p>
 
           <!-- Extra links -->

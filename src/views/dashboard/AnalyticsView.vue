@@ -4,6 +4,7 @@ import { motion } from 'motion-v'
 import { useAppointmentsStore } from '@/stores/appointments'
 import { useServicesStore } from '@/stores/services'
 import { usePatientsStore } from '@/stores/patients'
+import { useAuthStore } from '@/stores/auth'
 import { callGemini } from '@/services/gemini'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -41,6 +42,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 const appointmentsStore = useAppointmentsStore()
 const servicesStore = useServicesStore()
 const patientsStore = usePatientsStore()
+const authStore = useAuthStore()
 
 onMounted(() => {
   fetchInsight()
@@ -307,7 +309,7 @@ async function fetchInsight() {
     .map(([name, count]) => `${name}: ${count}`)
     .join(', ')
 
-  const systemPrompt = `Eres un analista de datos medico. Analiza estas estadisticas de un consultorio en Queretaro y da 2-3 insights accionables en espanol mexicano. Estadisticas: ${totalCitasMes.value} citas este mes, ${noShowRate.value}% tasa de no-shows, servicio mas popular: ${topServiceName.value}, ingresos estimados: ${appointmentsStore.estimatedRevenue} MXN. Distribucion: ${breakdown}.`
+  const systemPrompt = `Eres un analista de datos medico. Analiza estas estadisticas de un consultorio en ${authStore.clinicCity} y da 2-3 insights accionables en espanol mexicano. Estadisticas: ${totalCitasMes.value} citas este mes, ${noShowRate.value}% tasa de no-shows, servicio mas popular: ${topServiceName.value}, ingresos estimados: ${appointmentsStore.estimatedRevenue} MXN. Distribucion: ${breakdown}.`
 
   try {
     const result = await callGemini('Genera los insights.', systemPrompt)

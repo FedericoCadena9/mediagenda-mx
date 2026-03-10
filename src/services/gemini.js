@@ -36,16 +36,13 @@ export async function callGemini(prompt, systemPrompt = '') {
       lastError = error
 
       if (isMissingModelError(error)) {
-        console.warn(`Gemini model unavailable: ${modelName}`, error)
         continue
       }
 
-      console.error('Gemini error:', error)
       throw error
     }
   }
 
-  console.error('Gemini error:', lastError)
   throw lastError
 }
 
@@ -76,14 +73,11 @@ export async function callGeminiMultimodal(parts, systemPrompt = '') {
     } catch (error) {
       lastError = error
       if (isMissingModelError(error)) {
-        console.warn(`Gemini model unavailable: ${modelName}`, error)
         continue
       }
-      console.error('Gemini error:', error)
       throw error
     }
   }
 
-  console.error('Gemini error:', lastError)
   throw lastError
 }

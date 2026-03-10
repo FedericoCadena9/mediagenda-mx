@@ -235,13 +235,22 @@ function isTerminal(status) {
   return terminalStatuses.includes(status)
 }
 
+const statusConfirmLabels = {
+  confirmada: 'confirmar',
+  en_curso: 'iniciar',
+  completada: 'completar',
+  cancelada: 'cancelar',
+  no_show: 'marcar como no asistió',
+}
+
 function updateStatus(newStatus) {
-  if (selectedAppointment.value) {
-    appointmentsStore.updateStatus(selectedAppointment.value.id, newStatus)
-    selectedAppointment.value = {
-      ...selectedAppointment.value,
-      status: newStatus,
-    }
+  if (!selectedAppointment.value) return
+  const label = statusConfirmLabels[newStatus] || newStatus
+  if (!window.confirm(`¿Seguro que deseas ${label} esta cita?`)) return
+  appointmentsStore.updateStatus(selectedAppointment.value.id, newStatus)
+  selectedAppointment.value = {
+    ...selectedAppointment.value,
+    status: newStatus,
   }
 }
 
