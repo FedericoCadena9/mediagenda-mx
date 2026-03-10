@@ -1,6 +1,10 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useWhatsApp } from '@/composables/useWhatsApp'
+import screenshotDashboard from '@/assets/screenshots/dashboard.jpeg'
+import screenshotCalendario from '@/assets/screenshots/calendario.jpeg'
+import screenshotNotas from '@/assets/screenshots/notas-clinicas.jpeg'
+import screenshotAnalitica from '@/assets/screenshots/analitica.jpeg'
 
 const { heroLink: waLink } = useWhatsApp()
 const scrolled = ref(false)
@@ -29,58 +33,87 @@ onUnmounted(() => {
           : 'bg-[#F8FAFB]'
       ]"
     >
-      <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
-        <div class="min-w-0 flex-1">
-          <h1 class="truncate text-base font-extrabold text-[#0A3040] sm:text-lg">
-            <span class="text-[#088BB2]">Consultia</span><span class="text-[#0A3040]/40"> — </span><span class="hidden font-semibold text-[#64748b] sm:inline">Sistema de Gestión para Consultorios</span>
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:py-3.5 sm:px-6 lg:px-8">
+        <div class="min-w-0 flex-1 mr-3">
+          <h1 class="text-base font-extrabold text-[#0A3040] sm:text-lg">
+            <span class="text-[#088BB2]">Consultia</span><span class="text-[#0A3040]/40 hidden sm:inline"> — </span><span class="hidden font-semibold text-[#64748b] sm:inline">Sistema de Gestión para Consultorios</span>
           </h1>
         </div>
-        <div class="flex shrink-0 items-center gap-2.5">
+        <div class="flex shrink-0 items-center gap-2">
           <router-link
             to="/demo"
-            class="inline-flex items-center gap-1.5 rounded-lg border border-[#0A3040]/10 bg-[#0A3040] px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#0A3040]/90"
+            class="inline-flex items-center gap-1.5 rounded-lg border border-[#0A3040]/10 bg-[#0A3040] px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold text-white transition-all duration-200 hover:bg-[#0A3040]/90"
           >
             <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            Preview
+            <span class="hidden sm:inline">Preview</span>
+            <span class="sm:hidden">Demo</span>
           </router-link>
           <a
             :href="waLink"
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center rounded-lg border border-[#e2e8f0] bg-white px-4 py-2 text-sm font-semibold text-[#0A3040] transition-all duration-200 hover:border-[#088BB2]/30 hover:bg-[#EAFBFE]/50"
+            class="inline-flex items-center rounded-lg border border-[#e2e8f0] bg-white px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold text-[#0A3040] transition-all duration-200 hover:border-[#088BB2]/30 hover:bg-[#EAFBFE]/50"
           >
-            Desde $499/mes
+            $499/mes
           </a>
         </div>
       </div>
     </div>
 
-    <!-- Screenshot Grid -->
-    <div class="mx-auto max-w-6xl px-4 pt-4 pb-8 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <!-- Screenshot Grid: horizontal scroll on mobile, 2x2 grid on desktop -->
+    <div class="mx-auto max-w-6xl pt-4 pb-8 sm:px-6 lg:px-8">
 
+      <!-- Mobile: Horizontal scroll carousel -->
+      <div class="sm:hidden">
+        <div class="flex gap-3 overflow-x-auto snap-x snap-mandatory px-4 pb-4 -mx-0 scrollbar-hide">
+          <div
+            v-for="(card, i) in [
+              { src: screenshotDashboard, label: 'Dashboard', desc: 'Vista general del día', color: '#088BB2' },
+              { src: screenshotCalendario, label: 'Calendario', desc: 'Agenda semanal', color: '#088BB2' },
+              { src: screenshotNotas, label: 'Notas Clínicas', desc: 'IA genera notas SOAP', color: '#7C3AED' },
+              { src: screenshotAnalitica, label: 'Analítica', desc: 'Métricas del consultorio', color: '#088BB2' },
+            ]"
+            :key="i"
+            class="flex-shrink-0 w-[85vw] snap-center"
+          >
+            <div class="overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white shadow-sm">
+              <img :src="card.src" :alt="card.label" class="aspect-[16/10] w-full object-cover object-top" />
+              <div class="px-3.5 py-3 flex items-center gap-2.5">
+                <div class="w-2 h-2 rounded-full flex-shrink-0" :style="{ backgroundColor: card.color }"></div>
+                <div class="min-w-0">
+                  <p class="text-[13px] font-bold text-[#0A3040] leading-tight">{{ card.label }}</p>
+                  <p class="text-[11px] text-[#94a3b8] leading-tight mt-0.5">{{ card.desc }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Scroll hint dots -->
+        <div class="flex justify-center gap-1.5 mt-1">
+          <div v-for="i in 4" :key="i" class="w-1.5 h-1.5 rounded-full" :class="i === 1 ? 'bg-[#088BB2]' : 'bg-[#e2e8f0]'"></div>
+        </div>
+      </div>
+
+      <!-- Desktop: 2x2 Grid -->
+      <div class="hidden sm:grid grid-cols-2 gap-4 px-0">
         <!-- Card 1: Dashboard — Hoy -->
         <div class="group overflow-hidden rounded-2xl border border-[#e2e8f0] bg-[#F8FAFB] transition-all duration-300 hover:border-[#088BB2]/25 hover:shadow-xl hover:shadow-[#088BB2]/5">
-          <!-- Replace src with your screenshot -->
-          <img src="" alt="Dashboard — Hoy" class="aspect-[4/3] w-full object-cover bg-[#e2e8f0]" />
+          <img :src="screenshotDashboard" alt="Dashboard — Hoy" class="aspect-[4/3] w-full object-cover" />
         </div>
 
         <!-- Card 2: Calendario -->
         <div class="group overflow-hidden rounded-2xl border border-[#e2e8f0] bg-[#F8FAFB] transition-all duration-300 hover:border-[#088BB2]/25 hover:shadow-xl hover:shadow-[#088BB2]/5">
-          <!-- Replace src with your screenshot -->
-          <img src="" alt="Calendario Semanal" class="aspect-[4/3] w-full object-cover bg-[#e2e8f0]" />
+          <img :src="screenshotCalendario" alt="Calendario Semanal" class="aspect-[4/3] w-full object-cover" />
         </div>
 
         <!-- Card 3: Notas Clínicas IA -->
         <div class="group overflow-hidden rounded-2xl border border-[#e2e8f0] bg-[#F8FAFB] transition-all duration-300 hover:border-[#7C3AED]/25 hover:shadow-xl hover:shadow-[#7C3AED]/5">
-          <!-- Replace src with your screenshot -->
-          <img src="" alt="Notas Clínicas IA" class="aspect-[4/3] w-full object-cover bg-[#e2e8f0]" />
+          <img :src="screenshotNotas" alt="Notas Clínicas IA" class="aspect-[4/3] w-full object-cover" />
         </div>
 
         <!-- Card 4: Analítica -->
         <div class="group overflow-hidden rounded-2xl border border-[#e2e8f0] bg-[#F8FAFB] transition-all duration-300 hover:border-[#088BB2]/25 hover:shadow-xl hover:shadow-[#088BB2]/5">
-          <!-- Replace src with your screenshot -->
-          <img src="" alt="Analítica" class="aspect-[4/3] w-full object-cover bg-[#e2e8f0]" />
+          <img :src="screenshotAnalitica" alt="Analítica" class="aspect-[4/3] w-full object-cover" />
         </div>
       </div>
 
@@ -169,3 +202,13 @@ onUnmounted(() => {
     </div>
   </section>
 </template>
+
+<style scoped>
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+</style>
