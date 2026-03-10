@@ -70,6 +70,7 @@ const statsCards = computed(() => [
     accent: 'medical',
     trend: '+12%',
     positive: true,
+    progress: Math.min(100, (totalCitasMes.value / 30) * 100),
   },
   {
     title: 'Tasa de no-shows',
@@ -78,6 +79,7 @@ const statsCards = computed(() => [
     accent: 'rose',
     trend: noShowRate.value > 10 ? '+2.1%' : '-1.3%',
     positive: noShowRate.value <= 10,
+    progress: 100 - noShowRate.value,
   },
   {
     title: 'Servicio mas solicitado',
@@ -86,6 +88,7 @@ const statsCards = computed(() => [
     accent: 'amber',
     trend: null,
     positive: true,
+    progress: 85,
   },
   {
     title: 'Ingresos estimados',
@@ -95,6 +98,7 @@ const statsCards = computed(() => [
     accent: 'emerald',
     trend: '+8.4%',
     positive: true,
+    progress: 72,
   },
 ])
 
@@ -103,21 +107,41 @@ const accentClasses = {
     iconBg: 'bg-medical-50 border-medical-100',
     iconText: 'text-medical-600',
     dot: 'bg-medical-500',
+    gradient: 'from-medical-500 to-medical-400',
+    ringColor: 'stroke-medical-500',
+    ringBg: 'stroke-medical-100',
+    trendBg: 'bg-medical-50',
+    trendText: 'text-medical-700',
   },
   rose: {
     iconBg: 'bg-rose-50 border-rose-100',
     iconText: 'text-rose-500',
     dot: 'bg-rose-500',
+    gradient: 'from-rose-500 to-rose-400',
+    ringColor: 'stroke-rose-500',
+    ringBg: 'stroke-rose-100',
+    trendBg: 'bg-rose-50',
+    trendText: 'text-rose-700',
   },
   amber: {
     iconBg: 'bg-amber-50 border-amber-100',
     iconText: 'text-amber-500',
     dot: 'bg-amber-500',
+    gradient: 'from-amber-500 to-amber-400',
+    ringColor: 'stroke-amber-500',
+    ringBg: 'stroke-amber-100',
+    trendBg: 'bg-amber-50',
+    trendText: 'text-amber-700',
   },
   emerald: {
     iconBg: 'bg-emerald-50 border-emerald-100',
     iconText: 'text-emerald-500',
     dot: 'bg-emerald-500',
+    gradient: 'from-emerald-500 to-emerald-400',
+    ringColor: 'stroke-emerald-500',
+    ringBg: 'stroke-emerald-100',
+    trendBg: 'bg-emerald-50',
+    trendText: 'text-emerald-700',
   },
 }
 
@@ -324,42 +348,74 @@ async function fetchInsight() {
         v-for="(stat, idx) in statsCards"
         :key="stat.title"
         :variants="{
-          hidden: { opacity: 0, y: 8 },
-          visible: { opacity: 1, y: 0 }
+          hidden: { opacity: 0, y: 12, scale: 0.97 },
+          visible: { opacity: 1, y: 0, scale: 1 }
         }"
-        :transition="{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }"
+        :transition="{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }"
       >
         <motion.div
-          class="border border-border rounded-2xl shadow-card p-4 lg:p-5 group hover:shadow-card-up transition-colors"
-          :whileHover="{ y: -2, transition: { duration: 0.2 } }"
+          class="stat-card relative overflow-hidden border border-border rounded-2xl shadow-card p-4 lg:p-5 group cursor-default"
+          :whileHover="{ y: -3, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }"
         >
-          <div class="flex items-center justify-between mb-4">
-            <div
-              class="w-9 h-9 rounded-xl flex items-center justify-center border"
-              :class="[accentClasses[stat.accent].iconBg]"
-            >
-              <component :is="stat.icon" class="w-[18px] h-[18px]" :class="accentClasses[stat.accent].iconText" />
+          <!-- Left accent bar -->
+          <div
+            class="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            :class="accentClasses[stat.accent].gradient"
+          ></div>
+
+          <!-- Subtle corner glow on hover -->
+          <div
+            class="absolute -top-8 -right-8 w-24 h-24 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl pointer-events-none"
+            :class="`bg-gradient-to-br ${accentClasses[stat.accent].gradient}`"
+            style="opacity: 0;"
+          ></div>
+          <div
+            class="stat-glow absolute -top-8 -right-8 w-24 h-24 rounded-full blur-2xl pointer-events-none"
+            :class="`bg-gradient-to-br ${accentClasses[stat.accent].gradient}`"
+          ></div>
+
+          <!-- Icon with progress ring -->
+          <div class="flex items-start justify-between mb-3.5">
+            <div class="relative">
+              <svg class="w-11 h-11" viewBox="0 0 44 44">
+                <circle cx="22" cy="22" r="18" fill="none" stroke-width="2.5" class="opacity-40" :class="accentClasses[stat.accent].ringBg" />
+                <circle
+                  cx="22" cy="22" r="18"
+                  fill="none" stroke-width="2.5"
+                  stroke-linecap="round"
+                  :class="accentClasses[stat.accent].ringColor"
+                  :stroke-dasharray="`${(stat.progress || 70) * 1.13} 113.1`"
+                  transform="rotate(-90 22 22)"
+                  class="stat-ring-progress"
+                />
+              </svg>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <component :is="stat.icon" class="w-[16px] h-[16px]" :class="accentClasses[stat.accent].iconText" />
+              </div>
             </div>
-            <button class="text-muted-foreground/40 hover:text-muted-foreground -mr-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <MoreVertical class="w-4 h-4" />
-            </button>
-          </div>
-          <p class="text-[1.55rem] lg:text-[1.7rem] font-extrabold text-foreground tracking-tight leading-none">
-            {{ stat.value }}
-          </p>
-          <span v-if="stat.subtitle" class="text-[11px] font-semibold text-muted-foreground ml-0.5">{{ stat.subtitle }}</span>
-          <div class="mt-2 flex items-center gap-1.5">
-            <p class="text-[13px] font-medium text-muted-foreground leading-tight">{{ stat.title }}</p>
+
+            <!-- Trend pill -->
             <span
               v-if="stat.trend"
-              class="text-[10.5px] font-bold flex items-center gap-0.5 ml-auto"
-              :class="stat.positive ? 'text-emerald-500' : 'text-rose-500'"
+              class="flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-tight"
+              :class="stat.positive
+                ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                : 'bg-rose-50 text-rose-600 border border-rose-100'"
             >
+              <TrendingUp v-if="stat.positive" class="w-2.5 h-2.5" />
+              <TrendingDown v-else class="w-2.5 h-2.5" />
               {{ stat.trend }}
-              <TrendingUp v-if="stat.positive" class="w-3 h-3" />
-              <TrendingDown v-else class="w-3 h-3" />
             </span>
           </div>
+
+          <!-- Value -->
+          <p class="text-[1.5rem] lg:text-[1.65rem] font-extrabold text-foreground tracking-tight leading-none">
+            {{ stat.value }}
+          </p>
+          <span v-if="stat.subtitle" class="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-wider ml-0.5">{{ stat.subtitle }}</span>
+
+          <!-- Label -->
+          <p class="mt-1.5 text-[12px] font-medium text-muted-foreground leading-tight">{{ stat.title }}</p>
         </motion.div>
       </motion.div>
     </motion.div>
@@ -537,3 +593,35 @@ async function fetchInsight() {
 
   </div>
 </template>
+
+<style scoped>
+/* Stat card hover elevation */
+.stat-card {
+  transition: box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+.stat-card:hover {
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.06),
+    0 20px 40px -8px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Corner glow on hover */
+.stat-glow {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.stat-card:hover .stat-glow {
+  opacity: 0.07;
+}
+
+/* Ring progress animation on load */
+.stat-ring-progress {
+  animation: ring-draw 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  stroke-dashoffset: 113.1;
+}
+@keyframes ring-draw {
+  from { stroke-dashoffset: 113.1; }
+  to { stroke-dashoffset: 0; }
+}
+</style>
