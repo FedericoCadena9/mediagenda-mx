@@ -1,59 +1,80 @@
 <script setup>
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
+import { ref } from 'vue'
 
 const faqs = [
   {
-    question: 'Necesito saber de tecnologia?',
-    answer: 'No. Nosotros configuramos todo. Tu solo compartes tu link con tus pacientes.',
+    question: '¿Necesito saber de tecnología?',
+    answer: 'No. Nosotros configuramos todo. Tus pacientes siguen agendando por WhatsApp como siempre, pero ahora todo se organiza automáticamente.',
   },
   {
-    question: 'Cuanto tardan en tener mi pagina lista?',
-    answer: '48-72 horas despues de recibir tu informacion.',
+    question: '¿Cuánto tardan en tener mi página lista?',
+    answer: '48–72 horas después de recibir tu información. Te enviamos el link listo para usar.',
   },
   {
-    question: 'Mis pacientes necesitan descargar una app?',
-    answer: 'No. Agendan desde el navegador de su celular, sin instalar nada.',
+    question: '¿Mis pacientes necesitan descargar algo?',
+    answer: 'No. Agendan directo por WhatsApp, como ya lo hacen. La diferencia es que ahora cada cita se captura automáticamente en tu sistema.',
   },
   {
-    question: 'Puedo personalizar los colores y mi informacion?',
-    answer: 'Si, todo se adapta a tu consultorio: nombre, servicios, horarios y colores.',
+    question: '¿Puedo personalizar los colores y mi información?',
+    answer: 'Sí, todo se adapta a tu consultorio: nombre, servicios, horarios, colores y logo.',
   },
   {
-    question: 'Que pasa si necesito ayuda despues?',
-    answer: 'Con el plan de mantenimiento mensual tienes soporte por WhatsApp y actualizaciones.',
+    question: '¿Qué pasa si necesito ayuda después?',
+    answer: 'Con el plan de mantenimiento mensual tienes soporte por WhatsApp, hosting incluido y actualizaciones.',
   },
   {
-    question: 'Funciona en celular?',
-    answer: 'Si, todo es 100% responsive. Funciona perfecto en cualquier celular.',
+    question: '¿Funciona en celular?',
+    answer: 'Sí, todo es 100% responsive. Funciona perfecto en cualquier celular, tablet o computadora.',
   },
 ]
+
+const openIndex = ref(null)
+
+function toggle(i) {
+  openIndex.value = openIndex.value === i ? null : i
+}
 </script>
 
 <template>
   <section id="faq" class="bg-white py-20 md:py-28">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
       <div class="text-center">
-        <span class="text-xs font-semibold tracking-[0.2em] uppercase text-[#088BB2]">FAQ</span>
-        <h2 class="mt-4 text-3xl font-bold text-[#0A3040] sm:text-4xl">
+        <p class="mb-3 text-xs font-semibold tracking-[0.2em] uppercase text-[#088BB2]">FAQ</p>
+        <h2 class="text-3xl font-bold text-[#0A3040] sm:text-4xl">
           Preguntas frecuentes
         </h2>
       </div>
 
-      <Accordion type="single" collapsible class="mt-14 space-y-3">
-        <AccordionItem
+      <div class="mt-14 space-y-3">
+        <div
           v-for="(faq, i) in faqs"
           :key="i"
-          :value="`faq-${i}`"
-          class="overflow-hidden rounded-xl border border-[#e2e8f0] bg-[#F8FAFB] mb-3"
+          class="overflow-hidden rounded-xl border border-[#e2e8f0] bg-[#F8FAFB] transition-all duration-200"
+          :class="{ 'border-[#088BB2]/20 bg-[#EAFBFE]/20': openIndex === i }"
         >
-          <AccordionTrigger class="px-6 py-5 text-base font-medium text-[#0A3040] hover:text-[#088BB2] hover:no-underline">
-            {{ faq.question }}
-          </AccordionTrigger>
-          <AccordionContent class="px-6 pb-5 text-sm text-[#64748b]">
-            {{ faq.answer }}
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+          <button
+            class="flex w-full items-center justify-between px-6 py-5 text-left"
+            @click="toggle(i)"
+          >
+            <span class="text-base font-medium text-[#0A3040]">{{ faq.question }}</span>
+            <svg
+              class="h-5 w-5 shrink-0 text-[#94a3b8] transition-transform duration-200"
+              :class="{ 'rotate-180 text-[#088BB2]': openIndex === i }"
+              fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </button>
+          <div
+            class="grid transition-all duration-200"
+            :class="openIndex === i ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'"
+          >
+            <div class="overflow-hidden">
+              <p class="px-6 pb-5 text-sm text-[#64748b] leading-relaxed">{{ faq.answer }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </template>

@@ -1,17 +1,27 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { motion } from 'motion-v'
 import { useAppointmentsStore } from '@/stores/appointments'
 import { usePatientsStore } from '@/stores/patients'
 import { useServicesStore } from '@/stores/services'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Separator } from '@/components/ui/separator'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
-import StatusBadge from '@/components/ui/StatusBadge.vue'
+import { Separator } from '@/components/ui/separator'
+import {
+  Search,
+  MoreVertical,
+  CalendarCheck,
+  Clock,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  User,
+  Stethoscope,
+  CalendarDays,
+  MapPin,
+  FileText,
+  ArrowRight,
+  X,
+} from 'lucide-vue-next'
 
 const appointmentsStore = useAppointmentsStore()
 const patientsStore = usePatientsStore()
@@ -29,13 +39,13 @@ const statusOptions = [
   { value: 'en_curso', label: 'En curso' },
   { value: 'completada', label: 'Completada' },
   { value: 'cancelada', label: 'Cancelada' },
-  { value: 'no_show', label: 'No asistio' },
+  { value: 'no_show', label: 'No asistió' },
 ]
 
 const dateRangeOptions = [
   { value: 'esta_semana', label: 'Esta semana' },
   { value: 'este_mes', label: 'Este mes' },
-  { value: 'ultimos_30', label: 'Ultimos 30 dias' },
+  { value: 'ultimos_30', label: 'Últimos 30 días' },
   { value: 'todos', label: 'Todos' },
 ]
 
@@ -67,6 +77,14 @@ function patientName(patientId) {
   return p ? p.fullName : 'Paciente desconocido'
 }
 
+function patientInitials(patientId) {
+  const name = patientName(patientId)
+  const parts = name.split(' ')
+  return parts.length >= 2
+    ? (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase()
+    : parts[0].charAt(0).toUpperCase()
+}
+
 function serviceName(serviceId) {
   const s = servicesStore.getServiceById(serviceId)
   return s ? s.name : 'Servicio'
@@ -76,7 +94,6 @@ function serviceName(serviceId) {
 const filteredAppointments = computed(() => {
   let list = [...appointmentsStore.appointments]
 
-  // Date range
   const now = new Date()
   if (dateRangeFilter.value === 'esta_semana') {
     const mon = getMondayOfWeek(now)
@@ -94,12 +111,10 @@ const filteredAppointments = computed(() => {
     list = list.filter((a) => a.date >= cutoff)
   }
 
-  // Status
   if (statusFilter.value !== 'todos') {
     list = list.filter((a) => a.status === statusFilter.value)
   }
 
-  // Search by patient name
   if (searchQuery.value.trim()) {
     const q = searchQuery.value.trim().toLowerCase()
     list = list.filter((a) => {
@@ -108,7 +123,6 @@ const filteredAppointments = computed(() => {
     })
   }
 
-  // Sort by date descending, then time descending
   list.sort((a, b) => {
     const dateCmp = b.date.localeCompare(a.date)
     if (dateCmp !== 0) return dateCmp
@@ -118,9 +132,19 @@ const filteredAppointments = computed(() => {
   return list
 })
 
+// ── Stats ───────────────────────────────────────────────────────────
+const stats = computed(() => {
+  const all = filteredAppointments.value
+  const confirmed = all.filter((a) => a.status === 'confirmada').length
+  const pending = all.filter((a) => a.status === 'pendiente').length
+  const completed = all.filter((a) => a.status === 'completada').length
+  const cancelled = all.filter((a) => a.status === 'cancelada' || a.status === 'no_show').length
+  return { confirmed, pending, completed, cancelled }
+})
+
 // ── Pagination ──────────────────────────────────────────────────────
 const currentPage = ref(1)
-const perPage = 10
+const perPage = 8
 
 const totalPages = computed(() =>
   Math.max(1, Math.ceil(filteredAppointments.value.length / perPage))
@@ -131,10 +155,28 @@ const paginatedAppointments = computed(() => {
   return filteredAppointments.value.slice(start, start + perPage)
 })
 
-// Reset page when filters change
-function resetPage() {
+const visiblePages = computed(() => {
+  const pages = []
+  const total = totalPages.value
+  const current = currentPage.value
+
+  if (total <= 5) {
+    for (let i = 1; i <= total; i++) pages.push(i)
+  } else {
+    pages.push(1)
+    if (current > 3) pages.push('...')
+    const start = Math.max(2, current - 1)
+    const end = Math.min(total - 1, current + 1)
+    for (let i = start; i <= end; i++) pages.push(i)
+    if (current < total - 2) pages.push('...')
+    pages.push(total)
+  }
+  return pages
+})
+
+watch([statusFilter, dateRangeFilter, searchQuery], () => {
   currentPage.value = 1
-}
+})
 
 function prevPage() {
   if (currentPage.value > 1) currentPage.value--
@@ -144,10 +186,33 @@ function nextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++
 }
 
+function goToPage(p) {
+  if (typeof p === 'number') currentPage.value = p
+}
+
 // ── Format helpers ──────────────────────────────────────────────────
 function formatDateDisplay(dateStr) {
   const [y, m, d] = dateStr.split('-')
-  return `${d}/${m}/${y}`
+  const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+  return `${parseInt(d)} ${months[parseInt(m) - 1]} ${y}`
+}
+
+function formatDayName(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00')
+  const days = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb']
+  return days[d.getDay()]
+}
+
+function getStatusInfo(status) {
+  const map = {
+    confirmada: { label: 'Confirmada', color: 'text-medical-600', dot: 'bg-medical-500', bg: 'bg-medical-50' },
+    pendiente: { label: 'Pendiente', color: 'text-amber-600', dot: 'bg-amber-400', bg: 'bg-amber-50' },
+    completada: { label: 'Completada', color: 'text-emerald-600', dot: 'bg-emerald-500', bg: 'bg-emerald-50' },
+    en_curso: { label: 'En curso', color: 'text-sky-600', dot: 'bg-sky-400', bg: 'bg-sky-50' },
+    cancelada: { label: 'Cancelada', color: 'text-muted-foreground', dot: 'bg-muted-foreground/60', bg: 'bg-muted' },
+    no_show: { label: 'No asistió', color: 'text-red-500', dot: 'bg-red-400', bg: 'bg-red-50' },
+  }
+  return map[status] || { label: status, color: 'text-muted-foreground', dot: 'bg-muted-foreground/60', bg: 'bg-muted' }
 }
 
 // ── Detail drawer ───────────────────────────────────────────────────
@@ -179,262 +244,388 @@ function updateStatus(newStatus) {
     }
   }
 }
+
 </script>
 
 <template>
-  <div class="min-h-full bg-slate-50 p-4 sm:p-6 lg:p-8">
+  <div class="h-full flex flex-col p-5 sm:p-6 lg:p-7">
+
     <!-- Header -->
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold text-slate-900">
-        Citas
-        <span class="text-base font-normal text-slate-500 ml-2">
-          ({{ filteredAppointments.length }})
-        </span>
-      </h1>
-    </div>
+    <motion.div
+      :initial="{ opacity: 0, y: -8 }"
+      :animate="{ opacity: 1, y: 0 }"
+      :transition="{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }"
+      class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-5 flex-shrink-0"
+    >
+      <div>
+        <h1 class="text-[1.65rem] font-extrabold text-foreground tracking-tight">Citas</h1>
+        <p class="mt-0.5 text-[13px] text-muted-foreground">{{ filteredAppointments.length }} citas encontradas</p>
+      </div>
 
-    <!-- Filters -->
-    <Card class="mb-6">
-      <CardContent class="p-4">
-        <div class="flex flex-col sm:flex-row gap-3">
-          <!-- Status filter -->
-          <div class="flex-1 min-w-0">
-            <Label class="text-xs text-slate-500 mb-1">Estado</Label>
-            <Select v-model="statusFilter" @update:model-value="resetPage">
-              <SelectTrigger class="w-full">
-                <SelectValue placeholder="Todos" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem
-                  v-for="opt in statusOptions"
-                  :key="opt.value"
-                  :value="opt.value"
-                >
-                  {{ opt.label }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <!-- Date range filter -->
-          <div class="flex-1 min-w-0">
-            <Label class="text-xs text-slate-500 mb-1">Periodo</Label>
-            <Select v-model="dateRangeFilter" @update:model-value="resetPage">
-              <SelectTrigger class="w-full">
-                <SelectValue placeholder="Esta semana" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem
-                  v-for="opt in dateRangeOptions"
-                  :key="opt.value"
-                  :value="opt.value"
-                >
-                  {{ opt.label }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <!-- Search -->
-          <div class="flex-1 min-w-0">
-            <Label class="text-xs text-slate-500 mb-1">Buscar paciente</Label>
-            <div class="relative">
-              <svg
-                class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              <Input
-                v-model="searchQuery"
-                type="text"
-                placeholder="Nombre del paciente..."
-                class="pl-9"
-                @input="resetPage"
-              />
-            </div>
-          </div>
+      <!-- Quick stats (inline) -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-1.5 text-[12px]">
+          <span class="w-1.5 h-1.5 rounded-full bg-medical-500"></span>
+          <span class="text-muted-foreground">{{ stats.confirmed }}</span>
+          <span class="text-muted-foreground/60">conf.</span>
         </div>
-      </CardContent>
-    </Card>
+        <div class="flex items-center gap-1.5 text-[12px]">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+          <span class="text-muted-foreground">{{ stats.pending }}</span>
+          <span class="text-muted-foreground/60">pend.</span>
+        </div>
+        <div class="flex items-center gap-1.5 text-[12px]">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span class="text-muted-foreground">{{ stats.completed }}</span>
+          <span class="text-muted-foreground/60">comp.</span>
+        </div>
+      </div>
+    </motion.div>
 
-    <!-- Table -->
-    <Card class="overflow-hidden">
-      <div class="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Fecha</TableHead>
-              <TableHead>Hora</TableHead>
-              <TableHead>Paciente</TableHead>
-              <TableHead class="hidden sm:table-cell">Servicio</TableHead>
-              <TableHead>Estado</TableHead>
-              <TableHead>Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow
+    <!-- Inline filters bar -->
+    <motion.div
+      :initial="{ opacity: 0, y: 6 }"
+      :animate="{ opacity: 1, y: 0 }"
+      :transition="{ duration: 0.35, delay: 0.08, ease: [0.16, 1, 0.3, 1] }"
+      class="flex flex-wrap items-center gap-2 mb-5 flex-shrink-0"
+    >
+      <!-- Period pills -->
+      <div class="flex items-center bg-muted rounded-lg p-0.5">
+        <button
+          v-for="opt in dateRangeOptions"
+          :key="opt.value"
+          class="px-3 py-1.5 text-[12px] font-medium rounded-md transition-all"
+          :class="dateRangeFilter === opt.value
+            ? 'bg-white text-foreground shadow-sm'
+            : 'text-muted-foreground hover:text-foreground'"
+          @click="dateRangeFilter = opt.value"
+        >
+          {{ opt.label }}
+        </button>
+      </div>
+
+      <!-- Status chip filters -->
+      <div class="flex items-center gap-1.5 ml-1">
+        <button
+          v-for="opt in statusOptions.filter(o => o.value !== 'todos')"
+          :key="opt.value"
+          class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] font-medium rounded-lg border transition-all"
+          :class="statusFilter === opt.value
+            ? 'bg-foreground text-white border-foreground'
+            : 'bg-white text-muted-foreground bg-white text-muted-foreground border-border hover:border-border hover:text-foreground'"
+          @click="statusFilter = statusFilter === opt.value ? 'todos' : opt.value"
+        >
+          {{ opt.label }}
+          <X v-if="statusFilter === opt.value" class="w-3 h-3" />
+        </button>
+      </div>
+    </motion.div>
+
+    <!-- Table card -->
+    <motion.div
+      :initial="{ opacity: 0, y: 12 }"
+      :animate="{ opacity: 1, y: 0 }"
+      :transition="{ duration: 0.45, delay: 0.12, ease: [0.16, 1, 0.3, 1] }"
+      class="flex-1 min-h-0 bg-white border border-border rounded-2xl shadow-card flex flex-col"
+    >
+
+      <!-- Table header bar -->
+      <div class="flex items-center justify-between px-5 pt-4 pb-3 flex-shrink-0">
+        <h3 class="text-[15px] font-bold text-foreground">Lista de citas</h3>
+        <div class="flex items-center gap-2">
+          <div class="relative">
+            <Search class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/70" />
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Buscar paciente..."
+              class="h-8 pl-8 pr-3 text-xs bg-muted border border-border rounded-lg outline-none focus:border-medical-400 focus:ring-1 focus:ring-medical-400/20 transition-all w-48"
+            />
+          </div>
+          <button class="text-muted-foreground/40 hover:text-muted-foreground p-1 transition-colors">
+            <MoreVertical class="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      <!-- Desktop table -->
+      <div class="flex-1 min-h-0 overflow-auto px-5 hidden md:block">
+        <table class="w-full text-[13px]">
+          <thead class="sticky top-0 bg-white z-10">
+            <tr class="border-b border-border/60">
+              <th class="text-left py-2.5 font-semibold text-muted-foreground text-[10px] uppercase tracking-wider">Paciente</th>
+              <th class="text-left py-2.5 font-semibold text-muted-foreground text-[10px] uppercase tracking-wider">Fecha</th>
+              <th class="text-left py-2.5 font-semibold text-muted-foreground text-[10px] uppercase tracking-wider">Hora</th>
+              <th class="text-left py-2.5 font-semibold text-muted-foreground text-[10px] uppercase tracking-wider">Servicio</th>
+              <th class="text-left py-2.5 font-semibold text-muted-foreground text-[10px] uppercase tracking-wider">Estado</th>
+              <th class="py-2.5"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
               v-for="apt in paginatedAppointments"
               :key="apt.id"
-              class="cursor-pointer"
+              class="border-b border-border/40 last:border-0 hover:bg-muted/40 transition-colors cursor-pointer group"
+              @click="openDetail(apt)"
             >
-              <TableCell class="whitespace-nowrap">
-                {{ formatDateDisplay(apt.date) }}
-              </TableCell>
-              <TableCell class="whitespace-nowrap">
-                {{ apt.startTime }}
-              </TableCell>
-              <TableCell class="font-medium truncate max-w-[180px]">
-                {{ patientName(apt.patientId) }}
-              </TableCell>
-              <TableCell class="hidden sm:table-cell truncate max-w-[160px]">
+              <!-- Patient with avatar -->
+              <td class="py-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-gradient-to-br from-medical-400 to-medical-600 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
+                    {{ patientInitials(apt.patientId) }}
+                  </div>
+                  <span class="font-semibold text-foreground">{{ patientName(apt.patientId) }}</span>
+                </div>
+              </td>
+
+              <!-- Date -->
+              <td class="py-3">
+                <p class="text-foreground font-medium text-xs">{{ formatDateDisplay(apt.date) }}</p>
+                <p class="text-muted-foreground text-[11px] capitalize">{{ formatDayName(apt.date) }}</p>
+              </td>
+
+              <!-- Time -->
+              <td class="py-3">
+                <span class="text-foreground font-medium text-xs">{{ apt.startTime }}</span>
+                <span class="text-muted-foreground text-[11px] ml-1">- {{ apt.endTime }}</span>
+              </td>
+
+              <!-- Service -->
+              <td class="py-3 text-muted-foreground text-xs">
                 {{ serviceName(apt.serviceId) }}
-              </TableCell>
-              <TableCell>
-                <StatusBadge :status="apt.status" />
-              </TableCell>
-              <TableCell>
-                <Button variant="ghost" size="sm" class="text-cyan-600 hover:text-cyan-700 text-xs" @click="openDetail(apt)">
-                  Ver detalle
-                </Button>
-              </TableCell>
-            </TableRow>
-            <TableRow v-if="paginatedAppointments.length === 0">
-              <TableCell colspan="6" class="text-center py-12 text-slate-400">
-                No se encontraron citas con los filtros seleccionados.
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+              </td>
+
+              <!-- Status -->
+              <td class="py-3">
+                <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold" :class="getStatusInfo(apt.status).color">
+                  <span class="w-1.5 h-1.5 rounded-full" :class="getStatusInfo(apt.status).dot" />
+                  {{ getStatusInfo(apt.status).label }}
+                </span>
+              </td>
+
+              <!-- Action -->
+              <td class="py-3">
+                <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button class="p-1.5 rounded-lg text-muted-foreground/70 hover:text-medical-600 hover:bg-medical-50 transition-colors" @click.stop="openDetail(apt)">
+                    <Eye class="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Empty -->
+        <div v-if="filteredAppointments.length === 0" class="flex flex-col items-center justify-center py-16 text-center">
+          <div class="w-14 h-14 bg-medical-50 rounded-2xl flex items-center justify-center mb-4">
+            <CalendarCheck class="w-6 h-6 text-medical-500" />
+          </div>
+          <p class="text-sm font-medium text-foreground">Sin resultados</p>
+          <p class="text-xs text-muted-foreground mt-0.5">No se encontraron citas con los filtros seleccionados</p>
+        </div>
+      </div>
+
+      <!-- Mobile card list -->
+      <div class="flex-1 min-h-0 overflow-auto px-5 md:hidden space-y-2 pb-4">
+        <div
+          v-for="apt in paginatedAppointments"
+          :key="apt.id"
+          class="rounded-xl border border-border/60 shadow-card p-3.5 active:bg-muted transition-colors cursor-pointer"
+          @click="openDetail(apt)"
+        >
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-medical-400 to-medical-600 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
+              {{ patientInitials(apt.patientId) }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-[13px] font-semibold text-foreground truncate">{{ patientName(apt.patientId) }}</p>
+              <p class="text-[11px] text-muted-foreground">{{ serviceName(apt.serviceId) }}</p>
+            </div>
+            <span class="inline-flex items-center gap-1 text-[10px] font-semibold flex-shrink-0" :class="getStatusInfo(apt.status).color">
+              <span class="w-1.5 h-1.5 rounded-full" :class="getStatusInfo(apt.status).dot" />
+              {{ getStatusInfo(apt.status).label }}
+            </span>
+          </div>
+          <div class="flex items-center gap-4 text-[11px] text-muted-foreground pl-11">
+            <span>{{ formatDateDisplay(apt.date) }}</span>
+            <span>{{ apt.startTime }} - {{ apt.endTime }}</span>
+          </div>
+        </div>
+
+        <div v-if="filteredAppointments.length === 0" class="flex flex-col items-center justify-center py-12 text-center">
+          <p class="text-sm text-muted-foreground">Sin resultados</p>
+        </div>
       </div>
 
       <!-- Pagination -->
-      <div
-        v-if="totalPages > 1"
-        class="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-slate-50"
-      >
-        <p class="text-xs text-slate-500">
-          Pagina {{ currentPage }} de {{ totalPages }}
-          <span class="hidden sm:inline">
-            &mdash; {{ filteredAppointments.length }} citas en total
-          </span>
-        </p>
-        <div class="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            :disabled="currentPage <= 1"
-            @click="prevPage"
+      <div v-if="totalPages > 1" class="flex items-center justify-center gap-1 px-5 py-3 border-t border-border/60 flex-shrink-0">
+        <button
+          class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/60 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          :disabled="currentPage === 1"
+          @click="prevPage"
+        >
+          <ChevronLeft class="w-3.5 h-3.5" />
+          Anterior
+        </button>
+
+        <template v-for="page in visiblePages" :key="page">
+          <span v-if="page === '...'" class="px-1 text-xs text-muted-foreground">...</span>
+          <button
+            v-else
+            class="w-8 h-8 flex items-center justify-center text-xs font-semibold rounded-lg transition-colors"
+            :class="page === currentPage
+              ? 'bg-medical-600 text-white'
+              : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'"
+            @click="goToPage(page)"
           >
-            Anterior
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            :disabled="currentPage >= totalPages"
-            @click="nextPage"
-          >
-            Siguiente
-          </Button>
-        </div>
+            {{ page }}
+          </button>
+        </template>
+
+        <button
+          class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/60 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          :disabled="currentPage === totalPages"
+          @click="nextPage"
+        >
+          Siguiente
+          <ChevronRight class="w-3.5 h-3.5" />
+        </button>
       </div>
-    </Card>
+    </motion.div>
 
     <!-- Detail Sheet -->
     <Sheet :open="showDetail" @update:open="(val) => { if (!val) closeDetail() }">
-      <SheetContent side="right" class="w-full max-w-md overflow-y-auto">
+      <SheetContent side="right" class="w-full max-w-md overflow-y-auto bg-white">
         <SheetHeader>
-          <SheetTitle>Detalle de cita</SheetTitle>
-          <SheetDescription>Informacion completa de la cita</SheetDescription>
+          <SheetTitle class="text-lg font-bold text-foreground">Detalle de cita</SheetTitle>
+          <SheetDescription class="text-xs text-muted-foreground">Información completa de la cita seleccionada</SheetDescription>
         </SheetHeader>
 
         <div v-if="selectedAppointment" class="space-y-5 mt-6">
-          <!-- Patient -->
-          <div>
-            <p class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Paciente</p>
-            <p class="text-sm font-semibold text-slate-900">
-              {{ patientName(selectedAppointment.patientId) }}
-            </p>
-          </div>
-
-          <!-- Service -->
-          <div>
-            <p class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Servicio</p>
-            <p class="text-sm text-slate-700">
-              {{ serviceName(selectedAppointment.serviceId) }}
-            </p>
-          </div>
-
-          <Separator />
-
-          <!-- Date & time -->
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <p class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Fecha</p>
-              <p class="text-sm text-slate-700">{{ formatDateDisplay(selectedAppointment.date) }}</p>
+          <!-- Patient card -->
+          <div class="flex items-center gap-3 p-4 bg-muted rounded-xl">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-medical-400 to-medical-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+              {{ patientInitials(selectedAppointment.patientId) }}
             </div>
-            <div>
-              <p class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Hora</p>
-              <p class="text-sm text-slate-700">
-                {{ selectedAppointment.startTime }} - {{ selectedAppointment.endTime }}
-              </p>
+            <div class="flex-1 min-w-0">
+              <p class="text-[13px] font-semibold text-foreground">{{ patientName(selectedAppointment.patientId) }}</p>
+              <p class="text-[11px] text-muted-foreground">Paciente</p>
             </div>
           </div>
 
-          <!-- Source -->
-          <div>
-            <p class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Origen</p>
-            <p class="text-sm text-slate-700 capitalize">{{ selectedAppointment.source }}</p>
+          <!-- Info grid -->
+          <div class="space-y-3">
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-medical-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Stethoscope class="w-3.5 h-3.5 text-medical-600" />
+              </div>
+              <div>
+                <p class="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Servicio</p>
+                <p class="text-[13px] text-foreground font-medium">{{ serviceName(selectedAppointment.serviceId) }}</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-medical-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <CalendarDays class="w-3.5 h-3.5 text-medical-600" />
+              </div>
+              <div>
+                <p class="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Fecha</p>
+                <p class="text-[13px] text-foreground font-medium">{{ formatDateDisplay(selectedAppointment.date) }}</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-medical-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Clock class="w-3.5 h-3.5 text-medical-600" />
+              </div>
+              <div>
+                <p class="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Hora</p>
+                <p class="text-[13px] text-foreground font-medium">{{ selectedAppointment.startTime }} - {{ selectedAppointment.endTime }}</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-medical-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <MapPin class="w-3.5 h-3.5 text-medical-600" />
+              </div>
+              <div>
+                <p class="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Origen</p>
+                <p class="text-[13px] text-foreground font-medium capitalize">{{ selectedAppointment.source }}</p>
+              </div>
+            </div>
           </div>
 
           <!-- Notes -->
-          <div v-if="selectedAppointment.patientNotes">
-            <p class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Notas</p>
-            <p class="text-sm text-slate-700">{{ selectedAppointment.patientNotes }}</p>
+          <div v-if="selectedAppointment.patientNotes" class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-lg bg-medical-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <FileText class="w-3.5 h-3.5 text-medical-600" />
+            </div>
+            <div>
+              <p class="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Notas</p>
+              <p class="text-[13px] text-foreground">{{ selectedAppointment.patientNotes }}</p>
+            </div>
           </div>
 
           <Separator />
 
           <!-- Status -->
           <div>
-            <p class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">Estado</p>
-            <StatusBadge :status="selectedAppointment.status" />
+            <p class="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Estado actual</p>
+            <span
+              class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-[12px] font-semibold"
+              :class="[getStatusInfo(selectedAppointment.status).color, getStatusInfo(selectedAppointment.status).bg]"
+            >
+              <span class="w-2 h-2 rounded-full" :class="getStatusInfo(selectedAppointment.status).dot" />
+              {{ getStatusInfo(selectedAppointment.status).label }}
+            </span>
           </div>
 
           <!-- Actions -->
           <div v-if="!isTerminal(selectedAppointment.status)">
-            <p class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">Cambiar estado</p>
+            <p class="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Cambiar estado</p>
             <div class="flex flex-wrap gap-2">
               <template v-if="selectedAppointment.status === 'pendiente'">
-                <Button variant="outline" size="sm" class="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100" @click="updateStatus('confirmada')">
+                <button
+                  class="px-3 py-2 text-xs font-semibold rounded-lg bg-medical-50 text-medical-700 border border-medical-200 hover:bg-medical-100 transition-colors"
+                  @click="updateStatus('confirmada')"
+                >
                   Confirmar
-                </Button>
-                <Button variant="outline" size="sm" @click="updateStatus('cancelada')">
+                </button>
+                <button
+                  class="px-3 py-2 text-xs font-semibold rounded-lg bg-muted text-muted-foreground border border-border hover:bg-muted transition-colors"
+                  @click="updateStatus('cancelada')"
+                >
                   Cancelar
-                </Button>
+                </button>
               </template>
               <template v-if="selectedAppointment.status === 'confirmada'">
-                <Button variant="outline" size="sm" class="bg-cyan-50 text-cyan-700 border-cyan-200 hover:bg-cyan-100" @click="updateStatus('en_curso')">
+                <button
+                  class="px-3 py-2 text-xs font-semibold rounded-lg bg-sky-50 text-sky-700 border border-sky-200 hover:bg-sky-100 transition-colors"
+                  @click="updateStatus('en_curso')"
+                >
                   Iniciar
-                </Button>
-                <Button variant="outline" size="sm" @click="updateStatus('cancelada')">
+                </button>
+                <button
+                  class="px-3 py-2 text-xs font-semibold rounded-lg bg-muted text-muted-foreground border border-border hover:bg-muted transition-colors"
+                  @click="updateStatus('cancelada')"
+                >
                   Cancelar
-                </Button>
-                <Button variant="outline" size="sm" class="bg-red-50 text-red-700 border-red-200 hover:bg-red-100" @click="updateStatus('no_show')">
-                  No asistio
-                </Button>
+                </button>
+                <button
+                  class="px-3 py-2 text-xs font-semibold rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition-colors"
+                  @click="updateStatus('no_show')"
+                >
+                  No asistió
+                </button>
               </template>
               <template v-if="selectedAppointment.status === 'en_curso'">
-                <Button variant="outline" size="sm" class="bg-green-50 text-green-700 border-green-200 hover:bg-green-100" @click="updateStatus('completada')">
+                <button
+                  class="px-3 py-2 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors"
+                  @click="updateStatus('completada')"
+                >
                   Completar
-                </Button>
+                </button>
               </template>
             </div>
           </div>
@@ -442,19 +633,15 @@ function updateStatus(newStatus) {
           <Separator />
 
           <!-- Patient link -->
-          <div>
-            <router-link
-              :to="`/demo/dashboard/pacientes/${selectedAppointment.patientId}`"
-              @click="closeDetail"
-            >
-              <Button variant="ghost" size="sm" class="text-cyan-600 hover:text-cyan-700 gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                Ver perfil del paciente
-              </Button>
-            </router-link>
-          </div>
+          <router-link
+            :to="`/demo/dashboard/pacientes/${selectedAppointment.patientId}`"
+            @click="closeDetail"
+            class="flex items-center gap-2 text-[13px] font-medium text-medical-600 hover:text-medical-700 transition-colors"
+          >
+            <User class="w-4 h-4" />
+            Ver perfil del paciente
+            <ArrowRight class="w-3.5 h-3.5 ml-auto" />
+          </router-link>
         </div>
       </SheetContent>
     </Sheet>

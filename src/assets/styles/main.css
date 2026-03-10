@@ -11,10 +11,11 @@ html {
 body {
   margin: 0;
   font-family: 'Plus Jakarta Sans', sans-serif;
-  background-color: #F8FAFB;
-  color: #0A3040;
+  background-color: #ffffff;
+  color: #0A2A3C;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 @theme inline {
@@ -68,23 +69,23 @@ body {
 
 :root {
   --radius: 0.625rem;
-  --background: #F8FAFB;
-  --foreground: #0A3040;
+  --background: #ffffff;
+  --foreground: #0A2A3C;
   --card: #ffffff;
-  --card-foreground: #0A3040;
+  --card-foreground: #0A2A3C;
   --popover: #ffffff;
-  --popover-foreground: #0A3040;
+  --popover-foreground: #0A2A3C;
   --primary: #088BB2;
   --primary-foreground: #ffffff;
-  --secondary: #EAFBFE;
-  --secondary-foreground: #088BB2;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #EAFBFE;
+  --secondary: #E6F7FB;
+  --secondary-foreground: #076F90;
+  --muted: #F1F3F6;
+  --muted-foreground: #455567;
+  --accent: #E6F7FB;
   --accent-foreground: #076F90;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #e2e8f0;
-  --input: #e2e8f0;
+  --border: #E2E6EB;
+  --input: #E2E6EB;
   --ring: #088BB2;
   --chart-1: #088BB2;
   --chart-2: #0CADD4;
@@ -92,12 +93,12 @@ body {
   --chart-4: #059669;
   --chart-5: #D97706;
   --sidebar: #ffffff;
-  --sidebar-foreground: #0A3040;
+  --sidebar-foreground: #0A2A3C;
   --sidebar-primary: #088BB2;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #EAFBFE;
-  --sidebar-accent-foreground: #088BB2;
-  --sidebar-border: #e2e8f0;
+  --sidebar-accent: #E6F7FB;
+  --sidebar-accent-foreground: #076F90;
+  --sidebar-border: #E2E6EB;
   --sidebar-ring: #088BB2;
 }
 
@@ -109,3 +110,118 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Card shadow system */
+@layer utilities {
+  .shadow-card {
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.04),
+      0 10px 15px -3px rgba(0, 0, 0, 0.06);
+  }
+  .hover\:shadow-card-up:hover {
+    box-shadow:
+      0 10px 15px -3px rgba(0, 0, 0, 0.05),
+      0 20px 25px -5px rgba(0, 0, 0, 0.07);
+  }
+}
+
+/* ── AI Emerald Theme ─────────────────────────────────────────────── */
+
+/* Emerald glow shadow for AI cards */
+@layer utilities {
+  .shadow-ai {
+    box-shadow:
+      0 0 0 1px rgba(16, 185, 129, 0.1),
+      0 4px 16px -2px rgba(16, 185, 129, 0.12),
+      0 12px 32px -4px rgba(5, 150, 105, 0.08);
+  }
+  .shadow-ai-lg {
+    box-shadow:
+      0 0 0 1px rgba(16, 185, 129, 0.12),
+      0 8px 24px -4px rgba(16, 185, 129, 0.18),
+      0 20px 48px -8px rgba(5, 150, 105, 0.12);
+  }
+}
+
+/* Shimmer sweep animation for AI loading */
+@keyframes ai-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Breathing glow for active AI elements */
+@keyframes ai-breathe {
+  0%, 100% { box-shadow: 0 0 12px rgba(16, 185, 129, 0.15), 0 0 4px rgba(16, 185, 129, 0.1); }
+  50% { box-shadow: 0 0 24px rgba(16, 185, 129, 0.3), 0 0 8px rgba(16, 185, 129, 0.2); }
+}
+
+/* Rotating border gradient for AI elements */
+@keyframes ai-border-spin {
+  0% { --ai-angle: 0deg; }
+  100% { --ai-angle: 360deg; }
+}
+
+/* Particle float for decorative AI elements */
+@keyframes ai-float {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+  50% { transform: translateY(-8px) scale(1.1); opacity: 1; }
+}
+
+@keyframes ai-float-delayed {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.4; }
+  50% { transform: translateY(-12px) rotate(180deg); opacity: 0.8; }
+}
+
+/* Gradient text utility */
+@layer utilities {
+  .text-ai-gradient {
+    background: linear-gradient(135deg, #10B981, #059669, #34D399);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+/* AI shimmer loading bar */
+.ai-shimmer-bar {
+  background: linear-gradient(90deg, rgba(16,185,129,0.1) 0%, rgba(52,211,153,0.3) 50%, rgba(16,185,129,0.1) 100%);
+  background-size: 200% 100%;
+  animation: ai-shimmer 1.8s ease-in-out infinite;
+}
+
+/* AI card with breathing border */
+.ai-card-glow {
+  animation: ai-breathe 3s ease-in-out infinite;
+}
+
+/* Emerald gradient backgrounds for AI sections */
+.bg-ai-gradient {
+  background: linear-gradient(145deg, #064E3B 0%, #065F46 30%, #047857 60%, #059669 100%);
+}
+
+.bg-ai-gradient-light {
+  background: linear-gradient(145deg, #ECFDF5 0%, #D1FAE5 50%, #A7F3D0 100%);
+}
+
+/* AI sparkle icon animation */
+@keyframes ai-sparkle-rotate {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(15deg) scale(1.15); }
+  50% { transform: rotate(0deg) scale(1); }
+  75% { transform: rotate(-10deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+.ai-sparkle {
+  animation: ai-sparkle-rotate 3s ease-in-out infinite;
+}
+
+/* AI dot pulse (for typing indicators) */
+@keyframes ai-dot-pulse {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+.ai-dot-1 { animation: ai-dot-pulse 1.4s ease-in-out infinite; }
+.ai-dot-2 { animation: ai-dot-pulse 1.4s ease-in-out 0.2s infinite; }
+.ai-dot-3 { animation: ai-dot-pulse 1.4s ease-in-out 0.4s infinite; }

@@ -51,17 +51,17 @@ function updateStatus(newStatus) {
 
 <template>
   <div
-    class="flex flex-col sm:flex-row sm:items-center gap-3 bg-white border border-slate-200 rounded-lg p-4 hover:shadow-sm transition-shadow"
+    class="flex flex-col sm:flex-row sm:items-center gap-3 bg-white border border-border rounded-lg p-4 hover:shadow-sm transition-shadow"
   >
     <!-- Time -->
-    <div class="flex-shrink-0 text-sm font-semibold text-slate-700 w-16">
+    <div class="flex-shrink-0 text-sm font-semibold text-foreground w-16">
       {{ formattedTime }}
     </div>
 
     <!-- Patient & Service -->
     <div class="flex-1 min-w-0">
-      <p class="text-sm font-medium text-slate-900 truncate">{{ patientName }}</p>
-      <p class="text-xs text-slate-500 truncate">{{ serviceName }}</p>
+      <p class="text-sm font-medium text-foreground truncate">{{ patientName }}</p>
+      <p class="text-xs text-muted-foreground truncate">{{ serviceName }}</p>
     </div>
 
     <!-- Badges -->

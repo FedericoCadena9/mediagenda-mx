@@ -8,90 +8,55 @@ import PricingSection from '@/components/landing/PricingSection.vue'
 import FAQSection from '@/components/landing/FAQSection.vue'
 import CTASection from '@/components/landing/CTASection.vue'
 import FooterSection from '@/components/landing/FooterSection.vue'
+import { useWhatsApp } from '@/composables/useWhatsApp'
 
-const waLink = 'https://wa.me/5214421234567?text=Hola%2C%20me%20interesa%20MediAgenda%20MX'
-const scrolled = ref(false)
-const mobileMenuOpen = ref(false)
+const { floatingLink: waLink } = useWhatsApp()
 
-function handleScroll() {
-  scrolled.value = window.scrollY > 20
+// ── FOMO notifications ──────────────────────────────────────────────
+const fomoVisible = ref(false)
+const fomoData = ref({ name: '', time: '', action: '' })
+
+const fomoItems = [
+  { name: 'Dra. Martínez', time: 'hace 2 horas', action: 'activó su consultorio' },
+  { name: 'Dr. Ramírez', time: 'hace 5 horas', action: 'recibió su primera cita online' },
+  { name: 'Dra. López', time: 'hace 1 día', action: 'configuró notas clínicas con IA' },
+  { name: 'Dr. Hernández', time: 'hace 1 día', action: 'activó su consultorio' },
+  { name: 'Dra. Sánchez', time: 'hace 2 días', action: 'agendó 8 citas esta semana' },
+  { name: 'Dr. Torres', time: 'hace 3 días', action: 'redujo sus no-shows un 40%' },
+]
+
+let fomoIndex = 0
+let fomoTimeout = null
+let fomoHideTimeout = null
+
+function showNextFomo() {
+  fomoData.value = fomoItems[fomoIndex % fomoItems.length]
+  fomoVisible.value = true
+  fomoIndex++
+
+  fomoHideTimeout = setTimeout(() => {
+    fomoVisible.value = false
+  }, 4000)
+
+  fomoTimeout = setTimeout(showNextFomo, 15000 + Math.random() * 10000)
 }
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll, { passive: true })
+  fomoTimeout = setTimeout(showNextFomo, 6000)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
+  clearTimeout(fomoTimeout)
+  clearTimeout(fomoHideTimeout)
 })
 </script>
 
 <template>
   <div class="relative min-h-screen bg-[#F8FAFB]">
-    <!-- Sticky Header -->
-    <header
-      class="fixed inset-x-0 top-0 z-50 transition-all duration-300"
-      :class="[
-        scrolled
-          ? 'border-b border-[#e2e8f0] bg-white/80 backdrop-blur-xl shadow-sm'
-          : 'bg-white/60 backdrop-blur-sm'
-      ]"
-    >
-      <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-        <div class="flex items-center gap-1">
-          <span class="text-lg font-extrabold text-[#088BB2]">Medi</span>
-          <span class="text-lg font-extrabold text-[#0A3040]">Agenda</span>
-        </div>
-
-        <nav class="hidden items-center gap-6 md:flex">
-          <a href="#demo-sections" class="text-sm font-medium text-[#475569] transition-colors hover:text-[#088BB2]">Demo</a>
-          <a href="#funciones" class="text-sm font-medium text-[#475569] transition-colors hover:text-[#088BB2]">Funciones</a>
-          <a href="#precios" class="text-sm font-medium text-[#475569] transition-colors hover:text-[#088BB2]">Precios</a>
-          <a href="#faq" class="text-sm font-medium text-[#475569] transition-colors hover:text-[#088BB2]">FAQ</a>
-        </nav>
-
-        <div class="flex items-center gap-3">
-          <a
-            :href="waLink"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="hidden rounded-lg border border-[#9AEBFB] bg-[#EAFBFE] px-4 py-2 text-sm font-medium text-[#088BB2] transition-colors hover:bg-[#CAF4FD] sm:inline-flex"
-          >
-            Contactar
-          </a>
-          <a
-            href="/demo"
-            class="rounded-lg bg-[#088BB2] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#076F90]"
-          >
-            Ver demo
-          </a>
-          <button
-            class="ml-1 inline-flex items-center justify-center rounded-lg p-2 text-[#475569] hover:bg-[#EAFBFE] md:hidden"
-            @click="mobileMenuOpen = !mobileMenuOpen"
-          >
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-              <path v-if="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-              <path v-else stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <div v-if="mobileMenuOpen" class="border-t border-[#e2e8f0] bg-white px-4 py-4 md:hidden">
-        <nav class="flex flex-col gap-3">
-          <a href="#demo-sections" class="text-sm font-medium text-[#475569]" @click="mobileMenuOpen = false">Demo</a>
-          <a href="#funciones" class="text-sm font-medium text-[#475569]" @click="mobileMenuOpen = false">Funciones</a>
-          <a href="#precios" class="text-sm font-medium text-[#475569]" @click="mobileMenuOpen = false">Precios</a>
-          <a href="#faq" class="text-sm font-medium text-[#475569]" @click="mobileMenuOpen = false">FAQ</a>
-          <a :href="waLink" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-[#088BB2]">Contactar</a>
-        </nav>
-      </div>
-    </header>
-
     <main>
       <HeroSection />
-      <DemoCategoriesSection />
       <FeaturesSection />
+      <DemoCategoriesSection />
       <HowItWorksSection />
       <PricingSection />
       <FAQSection />
@@ -100,6 +65,29 @@ onUnmounted(() => {
 
     <FooterSection />
 
+    <!-- FOMO notification -->
+    <Transition name="fomo">
+      <div
+        v-if="fomoVisible"
+        class="fixed bottom-6 left-6 z-50 flex items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-lg shadow-black/8 border border-[#e2e8f0] max-w-[320px]"
+      >
+        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#088BB2]/10">
+          <svg class="h-4.5 w-4.5 text-[#088BB2]" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+          </svg>
+        </div>
+        <div class="min-w-0">
+          <p class="text-[13px] font-semibold text-[#0A3040] leading-tight">
+            {{ fomoData.name }}
+            <span class="font-normal text-[#475569]">{{ fomoData.action }}</span>
+          </p>
+          <p class="text-[11px] text-[#94a3b8] mt-0.5">{{ fomoData.time }} · Querétaro</p>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- WhatsApp Floating Button -->
     <a
       :href="waLink"
       target="_blank"
@@ -114,3 +102,20 @@ onUnmounted(() => {
     </a>
   </div>
 </template>
+
+<style scoped>
+.fomo-enter-active {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fomo-leave-active {
+  transition: all 0.3s ease;
+}
+.fomo-enter-from {
+  opacity: 0;
+  transform: translateY(1rem) scale(0.95);
+}
+.fomo-leave-to {
+  opacity: 0;
+  transform: translateY(0.5rem) scale(0.97);
+}
+</style>

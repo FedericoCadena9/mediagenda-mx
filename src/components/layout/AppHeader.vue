@@ -8,7 +8,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Separator } from '@/components/ui/separator'
+import {
+  Menu,
+  Bell,
+  ChevronDown,
+  ExternalLink,
+  LogOut,
+} from 'lucide-vue-next'
 
 const emit = defineEmits(['toggle-sidebar'])
 
@@ -22,58 +28,71 @@ function handleLogout() {
 </script>
 
 <template>
-  <header class="sticky top-0 z-30 bg-white shadow-sm">
-    <div class="flex items-center justify-between h-14 px-4">
-      <!-- Left: hamburger + brand -->
+  <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-border shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+    <div class="flex items-center justify-between h-[60px] px-4 sm:px-6">
+      <!-- Left: hamburger -->
       <div class="flex items-center gap-3">
         <Button
           variant="ghost"
           size="icon"
-          class="md:hidden text-slate-600"
+          class="md:hidden text-foreground hover:bg-muted"
           @click="emit('toggle-sidebar')"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+          <Menu class="w-5 h-5" />
         </Button>
-        <span class="text-lg font-bold tracking-tight">
-          <span class="text-[#088BB2]">Medi</span><span class="text-[#0A3040]">Agenda</span> <span class="text-[#0A3040]">MX</span>
-        </span>
+
+        <!-- Mobile brand -->
+        <div class="md:hidden flex items-center gap-2">
+          <span class="text-base font-bold tracking-tight text-foreground">Consultia</span>
+          <span class="text-base font-bold tracking-tight text-medical-600">MX</span>
+        </div>
       </div>
 
-      <!-- Right: user menu -->
-      <div class="flex items-center gap-4 text-sm">
-        <span class="hidden sm:inline text-slate-700 font-medium">
-          {{ auth.doctorName }}
-        </span>
+      <!-- Right -->
+      <div class="flex items-center gap-2">
+        <!-- Notification bell -->
+        <Button variant="ghost" size="icon" class="relative text-muted-foreground hover:text-foreground hover:bg-muted">
+          <Bell class="w-[18px] h-[18px]" />
+          <span class="absolute top-2 right-2 w-2 h-2 bg-medical-500 rounded-full ring-2 ring-white"></span>
+        </Button>
 
-        <Separator orientation="vertical" class="hidden sm:block h-6" />
-
+        <!-- Public page link -->
         <router-link
           to="/demo/dr/carlos-mendoza"
-          class="hidden sm:inline"
+          class="hidden sm:block"
         >
-          <Button variant="link" class="text-[#088BB2] hover:text-[#076F90] px-0">
-            Ver p&aacute;gina p&uacute;blica
+          <Button variant="ghost" size="sm" class="gap-1.5 text-muted-foreground hover:text-foreground text-xs font-medium">
+            <ExternalLink class="w-3.5 h-3.5" />
+            Página pública
           </Button>
         </router-link>
 
+        <!-- Separator -->
+        <div class="hidden sm:block w-px h-6 bg-border mx-1"></div>
+
+        <!-- User dropdown -->
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
-            <Button variant="ghost" size="sm" class="text-slate-500 hover:text-slate-700">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-              </svg>
-            </Button>
+            <button class="flex items-center gap-2.5 pl-2 pr-1.5 py-1.5 rounded-xl hover:bg-muted transition-colors">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-medical-400 to-medical-700 flex items-center justify-center text-white text-[11px] font-bold ring-2 ring-medical-100 shadow-[0_2px_6px_rgba(8,139,178,0.2)]">
+                {{ auth.doctorName?.replace(/^Dr\.\s*/, '').split(' ').map(p => p.charAt(0)).slice(0, 2).join('') }}
+              </div>
+              <span class="hidden sm:block text-sm font-medium text-foreground max-w-[140px] truncate">
+                {{ auth.doctorName }}
+              </span>
+              <ChevronDown class="w-3.5 h-3.5 text-muted-foreground hidden sm:block" />
+            </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" class="w-48">
             <DropdownMenuItem class="sm:hidden" as-child>
-              <router-link to="/demo/dr/carlos-mendoza">
-                Ver p&aacute;gina p&uacute;blica
+              <router-link to="/demo/dr/carlos-mendoza" class="flex items-center gap-2">
+                <ExternalLink class="w-3.5 h-3.5" />
+                Página pública
               </router-link>
             </DropdownMenuItem>
-            <DropdownMenuItem @click="handleLogout">
-              Cerrar sesi&oacute;n
+            <DropdownMenuItem @click="handleLogout" class="flex items-center gap-2 text-red-600">
+              <LogOut class="w-3.5 h-3.5" />
+              Cerrar sesión
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

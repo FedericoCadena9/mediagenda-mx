@@ -1,17 +1,34 @@
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
+import { useRoute, useRouter } from 'vue-router'
 import {
   Sheet,
   SheetContent,
   SheetTitle,
 } from '@/components/ui/sheet'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import { useAuthStore } from '@/stores/auth'
+import {
+  LayoutGrid,
+  Users,
+  CalendarCheck,
+  MessageSquare,
+  BarChart3,
+  Calendar,
+  FileText,
+  LogOut,
+  Search,
+  Stethoscope,
+  Crown,
+  ChevronUp,
+} from 'lucide-vue-next'
 
 const props = defineProps({
-  collapsed: {
+  mobileOpen: {
     type: Boolean,
     default: false,
   },
@@ -20,149 +37,259 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 
 const route = useRoute()
+const router = useRouter()
+const auth = useAuthStore()
 
-const navItems = [
-  { icon: '\u{1F4CA}', label: 'Hoy', to: '/demo/dashboard', exact: true },
-  { icon: '\u{1F4C5}', label: 'Calendario', to: '/demo/dashboard/calendario' },
-  { icon: '\u{1F4CB}', label: 'Citas', to: '/demo/dashboard/citas' },
-  { icon: '\u{1F465}', label: 'Pacientes', to: '/demo/dashboard/pacientes' },
-  { icon: '\u{1F9E0}', label: 'Notas Cl\u00ednicas IA', to: '/demo/dashboard/notas', badge: 'IA' },
-  { icon: '\u{1F4AC}', label: 'Mensajes IA', to: '/demo/dashboard/mensajes', badge: 'IA' },
-  { icon: '\u{1F4C8}', label: 'Anal\u00edtica', to: '/demo/dashboard/analytics' },
+const mainNavItems = [
+  { icon: LayoutGrid, label: 'Dashboard', to: '/demo/dashboard', exact: true },
+  { icon: Users, label: 'Pacientes', to: '/demo/dashboard/pacientes' },
+  { icon: CalendarCheck, label: 'Citas', to: '/demo/dashboard/citas' },
+  { icon: MessageSquare, label: 'Mensajes', to: '/demo/dashboard/mensajes', badge: '24' },
+  { icon: BarChart3, label: 'Analítica', to: '/demo/dashboard/analytics' },
+  { icon: Calendar, label: 'Calendario', to: '/demo/dashboard/calendario' },
+  { icon: FileText, label: 'Notas Clínicas', to: '/demo/dashboard/notas' },
 ]
 
 function isActive(item) {
-  if (item.exact) {
-    return route.path === item.to
-  }
+  if (item.exact) return route.path === item.to
   return route.path.startsWith(item.to)
 }
 
-const mobileOpen = computed({
-  get: () => !props.collapsed,
+function handleLogout() {
+  auth.logout()
+  router.push('/')
+}
+
+const sheetOpen = computed({
+  get: () => props.mobileOpen,
   set: (val) => {
     if (!val) emit('close')
   },
 })
+
+const doctorInitials = computed(() => {
+  const name = auth.doctorName || ''
+  const parts = name.replace(/^Dr\.\s*/, '').split(' ')
+  return parts.map((p) => p.charAt(0).toUpperCase()).slice(0, 2).join('')
+})
 </script>
 
 <template>
-  <!-- Mobile sidebar via Sheet -->
-  <Sheet v-model:open="mobileOpen">
-    <SheetContent side="left" class="w-60 bg-white text-[#0A3040] p-0 border-none md:hidden">
-      <SheetTitle class="sr-only">Menu de navegaci&oacute;n</SheetTitle>
-      <div class="flex items-center px-4 h-14">
-        <span class="font-semibold text-sm tracking-wide text-[#0A3040]">MediAgenda MX</span>
-      </div>
+  <!-- ═══ MOBILE SIDEBAR (Sheet overlay) ═══ -->
+  <Sheet v-model:open="sheetOpen">
+    <SheetContent side="left" class="w-[280px] p-0 border-none md:hidden bg-white">
+      <SheetTitle class="sr-only">Menú de navegación</SheetTitle>
 
-      <Separator class="bg-[#e2e8f0]" />
+      <div class="flex flex-col h-full">
+        <!-- Logo -->
+        <div class="flex items-center gap-3 px-5 pt-7 pb-5">
+          <div class="w-10 h-10 rounded-xl bg-medical-950 flex items-center justify-center shadow-[0_2px_8px_rgba(10,48,64,0.2)]">
+            <Stethoscope class="w-5 h-5 text-medical-300" />
+          </div>
+          <div>
+            <span class="text-[17px] font-bold text-foreground tracking-tight">Consultia</span>
+            <span class="text-[17px] font-bold text-medical-600 tracking-tight">MX</span>
+          </div>
+        </div>
 
-      <nav class="flex-1 py-4 space-y-1 overflow-y-auto">
-        <router-link
-          v-for="item in navItems"
-          :key="item.to"
-          :to="item.to"
-          @click="emit('close')"
-        >
-          <Button
-            variant="ghost"
-            :class="[
-              'w-full justify-start gap-3 mx-2 rounded-lg text-sm',
-              isActive(item)
-                ? 'bg-[#EAFBFE] text-[#088BB2] hover:bg-[#EAFBFE] hover:text-[#088BB2]'
-                : 'text-[#64748b] hover:bg-[#F8FAFB] hover:text-[#0A3040]',
-            ]"
-          >
-            <span class="text-lg flex-shrink-0">{{ item.icon }}</span>
-            <span class="whitespace-nowrap">{{ item.label }}</span>
-            <Badge
-              v-if="item.badge"
-              class="ml-auto bg-violet-50 text-violet-600 border-none text-[10px] px-1.5 py-0.5"
+        <!-- Search -->
+        <div class="px-4 pb-5">
+          <div class="flex items-center gap-2.5 px-3.5 py-2.5 bg-muted/60 border border-border rounded-xl cursor-pointer hover:border-muted-foreground/20 transition-colors">
+            <Search class="w-3.5 h-3.5 text-muted-foreground/60" />
+            <span class="text-[13px] text-muted-foreground/60 flex-1">Buscar</span>
+            <div class="flex items-center gap-0.5">
+              <kbd class="text-[10px] text-muted-foreground/50 bg-white border border-border rounded px-1.5 py-0.5 font-mono shadow-[0_1px_0_rgba(0,0,0,0.04)]">&#x2318;</kbd>
+              <kbd class="text-[10px] text-muted-foreground/50 bg-white border border-border rounded px-1.5 py-0.5 font-mono shadow-[0_1px_0_rgba(0,0,0,0.04)]">K</kbd>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Nav -->
+        <nav class="flex-1 overflow-y-auto px-3">
+          <p class="text-[10px] font-semibold text-muted-foreground/60 tracking-[0.12em] uppercase mb-2 px-2.5">
+            Menú Principal
+          </p>
+          <div class="space-y-0.5">
+            <router-link
+              v-for="item in mainNavItems"
+              :key="item.to"
+              :to="item.to"
+              @click="emit('close')"
             >
-              {{ item.badge }}
-            </Badge>
-          </Button>
-        </router-link>
-      </nav>
+              <div
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13.5px] font-medium cursor-pointer transition-all duration-200 relative"
+                :class="isActive(item)
+                  ? 'bg-medical-50 text-medical-700 shadow-[0_1px_2px_rgba(8,139,178,0.06)]'
+                  : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'"
+              >
+                <!-- Active indicator bar -->
+                <div
+                  v-if="isActive(item)"
+                  class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-medical-600 rounded-full"
+                />
+                <component
+                  :is="item.icon"
+                  class="w-[18px] h-[18px] flex-shrink-0 transition-colors"
+                  :class="isActive(item) ? 'text-medical-600' : ''"
+                />
+                <span class="flex-1">{{ item.label }}</span>
+                <span
+                  v-if="item.badge"
+                  class="text-[10px] font-bold bg-medical-600 text-white rounded-full px-2 py-0.5 min-w-[24px] text-center shadow-[0_1px_3px_rgba(8,139,178,0.3)]"
+                >
+                  {{ item.badge }}
+                </span>
+              </div>
+            </router-link>
+          </div>
+        </nav>
 
-      <Separator class="bg-[#e2e8f0]" />
+        <!-- Upgrade banner -->
+        <div class="px-4 pt-3 pb-3">
+          <div class="rounded-2xl bg-gradient-to-br from-medical-50 to-medical-100/50 border border-medical-200/60 p-4">
+            <p class="text-[12.5px] text-medical-800 font-medium leading-snug mb-3">
+              Actualiza a Plan Pro para más usuarios y funciones.
+            </p>
+            <button class="w-full py-2.5 bg-medical-950 hover:bg-medical-900 text-white text-[12.5px] font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-[0_2px_8px_rgba(10,48,64,0.2)] hover:shadow-[0_4px_12px_rgba(10,48,64,0.25)]">
+              <Crown class="w-3.5 h-3.5" />
+              Ver planes
+            </button>
+          </div>
+        </div>
 
-      <div class="px-4 py-3">
-        <p class="text-[11px] text-[#94a3b8]">Demo v1.0</p>
+        <div class="mx-4 h-px bg-border"></div>
+
+        <!-- User with popover -->
+        <Popover>
+          <PopoverTrigger as-child>
+            <button class="flex items-center gap-3 px-5 py-4 w-full text-left hover:bg-muted/50 transition-colors">
+              <div class="w-9 h-9 rounded-full bg-gradient-to-br from-medical-400 to-medical-700 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 ring-2 ring-medical-100 shadow-[0_2px_6px_rgba(8,139,178,0.2)]">
+                {{ doctorInitials }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-[12.5px] font-semibold text-foreground truncate">{{ auth.doctorName }}</p>
+                <p class="text-[10.5px] text-muted-foreground">Administrador</p>
+              </div>
+              <ChevronUp class="w-3.5 h-3.5 text-muted-foreground/50 flex-shrink-0" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent side="top" align="start" class="w-56 p-1.5">
+            <button
+              class="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-lg text-[13px] font-medium text-red-600 hover:bg-red-50 transition-colors"
+              @click="handleLogout"
+            >
+              <LogOut class="w-4 h-4" />
+              Cerrar sesión
+            </button>
+          </PopoverContent>
+        </Popover>
       </div>
     </SheetContent>
   </Sheet>
 
-  <!-- Desktop sidebar -->
-  <aside
-    :class="[
-      'hidden md:flex sticky top-0 left-0 z-50 h-screen bg-white border-r border-[#e2e8f0] text-[#0A3040] flex-col transition-all duration-300 ease-in-out',
-      collapsed ? 'w-16' : 'w-60',
-    ]"
-  >
-    <!-- Desktop brand area -->
-    <div class="flex items-center h-14 px-4 border-b border-[#e2e8f0]">
-      <span
-        :class="[
-          'font-semibold tracking-wide transition-opacity duration-200',
-          collapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 text-sm',
-        ]"
-      >
-        MediAgenda MX
-      </span>
-      <span v-if="collapsed" class="text-lg font-bold mx-auto">M</span>
+  <!-- ═══ DESKTOP / TABLET SIDEBAR (always expanded) ═══ -->
+  <aside class="hidden md:flex h-full w-[268px] bg-white border-r border-border flex-col flex-shrink-0">
+    <!-- Logo -->
+    <div class="flex items-center gap-3 px-5 pt-7 pb-5">
+      <div class="w-10 h-10 rounded-xl bg-medical-950 flex items-center justify-center flex-shrink-0 shadow-[0_2px_8px_rgba(10,48,64,0.2)]">
+        <Stethoscope class="w-5 h-5 text-medical-300" />
+      </div>
+      <div>
+        <span class="text-[17px] font-bold text-foreground tracking-tight">Consultia</span>
+        <span class="text-[17px] font-bold text-medical-600 tracking-tight">MX</span>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="px-4 pb-5">
+      <div class="flex items-center gap-2.5 px-3.5 py-2.5 bg-muted/60 border border-border rounded-xl cursor-pointer hover:border-muted-foreground/20 transition-colors">
+        <Search class="w-3.5 h-3.5 text-muted-foreground/60" />
+        <span class="text-[13px] text-muted-foreground/60 flex-1">Buscar</span>
+        <div class="flex items-center gap-0.5">
+          <kbd class="text-[10px] text-muted-foreground/50 bg-white border border-border rounded px-1.5 py-0.5 font-mono shadow-[0_1px_0_rgba(0,0,0,0.04)]">&#x2318;</kbd>
+          <kbd class="text-[10px] text-muted-foreground/50 bg-white border border-border rounded px-1.5 py-0.5 font-mono shadow-[0_1px_0_rgba(0,0,0,0.04)]">K</kbd>
+        </div>
+      </div>
     </div>
 
     <!-- Navigation -->
-    <nav class="flex-1 py-4 space-y-1 overflow-y-auto">
-      <router-link
-        v-for="item in navItems"
-        :key="item.to"
-        :to="item.to"
-      >
-        <Button
-          variant="ghost"
-          :class="[
-            'w-full justify-start gap-3 mx-2 rounded-lg text-sm',
-            isActive(item)
-              ? 'bg-[#EAFBFE] text-[#088BB2] hover:bg-[#EAFBFE] hover:text-[#088BB2]'
-              : 'text-[#64748b] hover:bg-[#F8FAFB] hover:text-[#0A3040]',
-            collapsed ? 'justify-center px-0' : '',
-          ]"
+    <nav class="flex-1 overflow-y-auto px-3">
+      <p class="text-[10px] font-semibold text-muted-foreground/60 tracking-[0.12em] uppercase mb-2 px-2.5">
+        Menú Principal
+      </p>
+      <div class="space-y-0.5">
+        <router-link
+          v-for="item in mainNavItems"
+          :key="item.to"
+          :to="item.to"
         >
-          <span class="text-lg flex-shrink-0">{{ item.icon }}</span>
-          <span
-            :class="[
-              'whitespace-nowrap transition-opacity duration-200',
-              collapsed ? 'hidden' : '',
-            ]"
+          <div
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13.5px] font-medium cursor-pointer transition-all duration-200 relative"
+            :class="isActive(item)
+              ? 'bg-medical-50 text-medical-700 shadow-[0_1px_2px_rgba(8,139,178,0.06)]'
+              : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'"
           >
-            {{ item.label }}
-          </span>
-          <Badge
-            v-if="item.badge"
-            :class="[
-              'ml-auto bg-violet-50 text-violet-600 border-none text-[10px] px-1.5 py-0.5',
-              collapsed ? 'hidden' : '',
-            ]"
-          >
-            {{ item.badge }}
-          </Badge>
-        </Button>
-      </router-link>
+            <!-- Active indicator bar -->
+            <div
+              v-if="isActive(item)"
+              class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-medical-600 rounded-full"
+            />
+            <component
+              :is="item.icon"
+              class="w-[18px] h-[18px] flex-shrink-0 transition-colors"
+              :class="isActive(item) ? 'text-medical-600' : ''"
+            />
+            <span class="flex-1">{{ item.label }}</span>
+            <span
+              v-if="item.badge"
+              class="text-[10px] font-bold bg-medical-600 text-white rounded-full px-2 py-0.5 min-w-[24px] text-center shadow-[0_1px_3px_rgba(8,139,178,0.3)]"
+            >
+              {{ item.badge }}
+            </span>
+          </div>
+        </router-link>
+      </div>
     </nav>
 
-    <!-- Footer -->
-    <Separator class="bg-[#e2e8f0]" />
-    <div class="px-4 py-3">
-      <p
-        :class="[
-          'text-[11px] text-[#94a3b8] transition-opacity duration-200',
-          collapsed ? 'opacity-0' : '',
-        ]"
-      >
-        Demo v1.0
-      </p>
+    <!-- Upgrade banner -->
+    <div class="px-4 pt-2 pb-3">
+      <div class="rounded-2xl bg-gradient-to-br from-medical-50 to-medical-100/50 border border-medical-200/60 p-4">
+        <p class="text-[12.5px] text-medical-800 font-medium leading-snug mb-3">
+          Actualiza a Plan Pro para más usuarios y funciones.
+        </p>
+        <button class="w-full py-2.5 bg-medical-950 hover:bg-medical-900 text-white text-[12.5px] font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-[0_2px_8px_rgba(10,48,64,0.2)] hover:shadow-[0_4px_12px_rgba(10,48,64,0.25)]">
+          <Crown class="w-3.5 h-3.5" />
+          Ver planes
+        </button>
+      </div>
     </div>
+
+    <!-- Separator -->
+    <div class="mx-4 h-px bg-border"></div>
+
+    <!-- User profile with popover -->
+    <Popover>
+      <PopoverTrigger as-child>
+        <button class="flex items-center gap-3 px-5 py-4 w-full text-left hover:bg-muted/50 transition-colors">
+          <div class="w-9 h-9 rounded-full bg-gradient-to-br from-medical-400 to-medical-700 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 ring-2 ring-medical-100 shadow-[0_2px_6px_rgba(8,139,178,0.2)]">
+            {{ doctorInitials }}
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[12.5px] font-semibold text-foreground truncate">{{ auth.doctorName }}</p>
+            <p class="text-[10.5px] text-muted-foreground">Administrador</p>
+          </div>
+          <ChevronUp class="w-3.5 h-3.5 text-muted-foreground/50 flex-shrink-0" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent side="top" align="start" class="w-56 p-1.5">
+        <button
+          class="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-lg text-[13px] font-medium text-red-600 hover:bg-red-50 transition-colors"
+          @click="handleLogout"
+        >
+          <LogOut class="w-4 h-4" />
+          Cerrar sesión
+        </button>
+      </PopoverContent>
+    </Popover>
   </aside>
 </template>

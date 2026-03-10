@@ -1,6 +1,5 @@
 <script setup>
 import { computed } from 'vue'
-import { Card, CardContent } from '@/components/ui/card'
 
 const props = defineProps({
   title: {
@@ -23,33 +22,31 @@ const props = defineProps({
 
 const iconBgClass = computed(() => {
   const map = {
-    cyan: 'bg-cyan-100 text-cyan-600',
-    blue: 'bg-blue-100 text-blue-600',
-    green: 'bg-green-100 text-green-600',
-    amber: 'bg-amber-100 text-amber-600',
-    red: 'bg-red-100 text-red-600',
-    violet: 'bg-violet-100 text-violet-600',
+    cyan: 'bg-medical-50 border-medical-100 text-medical-600',
+    blue: 'bg-blue-50 border-blue-100 text-blue-600',
+    green: 'bg-emerald-50 border-emerald-100 text-emerald-600',
+    amber: 'bg-amber-50 border-amber-100 text-amber-600',
+    red: 'bg-rose-50 border-rose-100 text-rose-600',
+    violet: 'bg-violet-50 border-violet-100 text-violet-600',
   }
-  return map[props.color] ?? 'bg-cyan-100 text-cyan-600'
+  return map[props.color] ?? 'bg-medical-50 border-medical-100 text-medical-600'
 })
 </script>
 
 <template>
-  <Card class="py-0">
-    <CardContent class="p-4">
-      <div class="flex items-center gap-3">
-        <div
-          v-if="icon"
-          :class="iconBgClass"
-          class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-xl"
-        >
-          {{ icon }}
-        </div>
-        <div>
-          <p class="text-2xl font-bold text-slate-900">{{ value }}</p>
-          <p class="text-sm text-slate-500">{{ title }}</p>
-        </div>
+  <div class="bg-white border border-border rounded-xl p-4 shadow-card hover:shadow-card-up transition-shadow duration-200">
+    <div class="flex items-center gap-3">
+      <div
+        v-if="icon"
+        :class="iconBgClass"
+        class="flex-shrink-0 w-10 h-10 rounded-lg border flex items-center justify-center text-xl"
+      >
+        {{ icon }}
       </div>
-    </CardContent>
-  </Card>
+      <div>
+        <p class="text-[1.4rem] font-extrabold text-foreground tracking-tight leading-none">{{ value }}</p>
+        <p class="text-[13px] font-medium text-muted-foreground mt-1.5">{{ title }}</p>
+      </div>
+    </div>
+  </div>
 </template>

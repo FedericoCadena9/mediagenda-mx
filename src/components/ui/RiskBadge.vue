@@ -27,7 +27,7 @@ const levelMap = {
 }
 
 const label = computed(() => levelMap[props.level]?.label ?? props.level)
-const classes = computed(() => levelMap[props.level]?.classes ?? 'bg-slate-100 text-slate-700 border-slate-200')
+const classes = computed(() => levelMap[props.level]?.classes ?? 'bg-muted text-foreground border-border')
 </script>
 
 <template>

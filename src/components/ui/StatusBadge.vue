@@ -38,7 +38,7 @@ const statusMap = {
 }
 
 const label = computed(() => statusMap[props.status]?.label ?? props.status)
-const classes = computed(() => statusMap[props.status]?.classes ?? 'bg-slate-100 text-slate-800 border-slate-200')
+const classes = computed(() => statusMap[props.status]?.classes ?? 'bg-muted text-foreground border-border')
 </script>
 
 <template>
