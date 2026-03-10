@@ -130,21 +130,43 @@ const soapColors = {
   emerald: { border: 'border-l-emerald-500', bg: 'bg-emerald-50', text: 'text-emerald-700', icon: 'text-emerald-600' },
 }
 
+function stripMarkdown(text) {
+  return text
+    .replace(/\*{2,3}(.*?)\*{2,3}/g, '$1')   // **bold** / ***bold***
+    .replace(/^\s*#{1,6}\s+/gm, '')            // # headings
+    .replace(/^\s*[\*\-]\s+/gm, '• ')          // * or - bullets → •
+    .replace(/^\s*\d+\.\s+/gm, (m) => m.trim() + ' ') // numbered lists
+    .replace(/\n{3,}/g, '\n\n')                // excess blank lines
+    .trim()
+}
+
 function parseSoapResponse(text) {
   const sections = { S: '', O: '', A: '', P: '' }
 
-  const sMatch = text.match(/(?:\*{0,2})(?:Subjetivo\s*\(S\)|S\s*[-:)])\s*\*{0,2}\s*[:\-]?\s*([\s\S]*?)(?=(?:\*{0,2})(?:Objetivo\s*\(O\)|O\s*[-:)])\s*\*{0,2}\s*[:\-]|$)/i)
-  const oMatch = text.match(/(?:\*{0,2})(?:Objetivo\s*\(O\)|O\s*[-:)])\s*\*{0,2}\s*[:\-]?\s*([\s\S]*?)(?=(?:\*{0,2})(?:Evaluaci[o\u00f3]n\s*\(A\)|A\s*[-:)])\s*\*{0,2}\s*[:\-]|$)/i)
-  const aMatch = text.match(/(?:\*{0,2})(?:Evaluaci[o\u00f3]n\s*\(A\)|A\s*[-:)])\s*\*{0,2}\s*[:\-]?\s*([\s\S]*?)(?=(?:\*{0,2})(?:Plan\s*\(P\)|P\s*[-:)])\s*\*{0,2}\s*[:\-]|$)/i)
-  const pMatch = text.match(/(?:\*{0,2})(?:Plan\s*\(P\)|P\s*[-:)])\s*\*{0,2}\s*[:\-]?\s*([\s\S]*?)$/i)
+  // Build a more flexible header pattern that matches various Gemini formats:
+  // "**S (Subjetivo):**", "**Subjetivo (S):**", "S:", "## S (Subjetivo)", "Subjetivo:", etc.
+  const hdr = (letter, ...names) => {
+    const nameAlt = names.join('|')
+    return `(?:#{1,3}\\s*)?\\*{0,2}(?:${letter}\\s*[\\(\\-:]\\s*(?:${nameAlt})[\\)\\s]*|(?:${nameAlt})\\s*[\\(\\-:]?\\s*${letter}?[\\)\\s]*)\\*{0,2}\\s*[:\\-]?`
+  }
 
-  if (sMatch) sections.S = sMatch[1].trim()
-  if (oMatch) sections.O = oMatch[1].trim()
-  if (aMatch) sections.A = aMatch[1].trim()
-  if (pMatch) sections.P = pMatch[1].trim()
+  const sHdr = hdr('S', 'Subjetivo', 'S[iu]bjetivo', 'Síntomas')
+  const oHdr = hdr('O', 'Objetivo', 'Hallazgos', 'Exploración')
+  const aHdr = hdr('A', 'Evaluaci[oó]n', 'An[aá]lisis', 'Diagnóstico', 'Assessment')
+  const pHdr = hdr('P', 'Plan', 'Tratamiento')
+
+  const sMatch = text.match(new RegExp(`${sHdr}\\s*([\\s\\S]*?)(?=${oHdr}|$)`, 'i'))
+  const oMatch = text.match(new RegExp(`${oHdr}\\s*([\\s\\S]*?)(?=${aHdr}|$)`, 'i'))
+  const aMatch = text.match(new RegExp(`${aHdr}\\s*([\\s\\S]*?)(?=${pHdr}|$)`, 'i'))
+  const pMatch = text.match(new RegExp(`${pHdr}\\s*([\\s\\S]*?)$`, 'i'))
+
+  if (sMatch) sections.S = stripMarkdown(sMatch[1])
+  if (oMatch) sections.O = stripMarkdown(oMatch[1])
+  if (aMatch) sections.A = stripMarkdown(aMatch[1])
+  if (pMatch) sections.P = stripMarkdown(pMatch[1])
 
   if (!sections.S && !sections.O && !sections.A && !sections.P) {
-    sections.S = text
+    sections.S = stripMarkdown(text)
   }
 
   return sections
@@ -160,11 +182,21 @@ async function generateSOAP() {
 
   const soapSystemPrompt = `Eres un asistente médico profesional. Genera una nota clínica estructurada en formato SOAP en español mexicano. Sé claro, profesional y conciso.
 
-Genera la nota SOAP con 4 secciones:
-- Subjetivo (S): Lo que el paciente reporta
-- Objetivo (O): Hallazgos del examen físico y signos vitales
-- Evaluación (A): Diagnóstico o diagnósticos diferenciales
-- Plan (P): Tratamiento, medicamentos, seguimiento`
+IMPORTANTE: Usa EXACTAMENTE estos encabezados de sección (sin markdown, sin negritas, sin asteriscos):
+
+S (Subjetivo):
+[Lo que el paciente reporta]
+
+O (Objetivo):
+[Hallazgos del examen físico y signos vitales]
+
+A (Evaluación):
+[Diagnóstico o diagnósticos diferenciales]
+
+P (Plan):
+[Tratamiento, medicamentos, seguimiento]
+
+NO uses markdown, asteriscos (**), viñetas (*), ni encabezados (#). Escribe en texto plano con oraciones completas.`
 
   try {
     let result
